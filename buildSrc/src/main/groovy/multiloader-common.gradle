@@ -39,6 +39,10 @@ repositories {
         filter { includeGroup('org.parchmentmc.data') }
     }
     maven {
+        name = "PaperMC"
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
+    maven {
         name = 'BlameJared'
         url = 'https://maven.blamejared.com'
     }
@@ -76,7 +80,8 @@ jar {
                 'Implementation-Title'  : project.name,
                 'Implementation-Version': project.jar.archiveVersion,
                 'Implementation-Vendor' : mod_author,
-                'Built-On-Minecraft'    : minecraft_version
+                'Built-On-Minecraft'    : minecraft_version,
+                "ContainedDeps"         : "com.electronwill.night-config:toml:3.7.1"
         ])
     }
 }
@@ -96,10 +101,15 @@ processResources {
             'description'                  : project.description,
             'neoforge_version'             : neoforge_version,
             'neoforge_loader_version_range': neoforge_loader_version_range,
-            "forge_version": forge_version,
+            "forge_version"                : forge_version,
             "forge_loader_version_range": forge_loader_version_range,
             'credits'                      : credits,
-            'java_version'                 : java_version
+            'java_version'                 : java_version,
+            'mod_environment'              : mod_environment,
+            'paper_version'                : paper_version,
+            'mod_homepage'                 : mod_homepage,
+            'mod_source'                   : mod_source,
+            'mod_issues'                   : mod_issues
     ]
 
     filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {

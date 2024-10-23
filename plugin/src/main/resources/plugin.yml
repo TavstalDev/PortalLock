@@ -1,0 +1,7 @@
+name: PortalLock
+version: 1.0.0
+main: io.github.tavstal.portallock.PluginMain
+description: Prevents players from speedrunning the game by locking portals.
+author: Tavstal
+website: https://github.com/TavstalDev/PortalLock
+api-version: '1.21.1'
