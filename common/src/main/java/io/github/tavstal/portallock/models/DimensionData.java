@@ -31,7 +31,7 @@ public class DimensionData {
     @ConfigField(order = 9, comment = "Whether players are allowed to enter the dimension.")
     public boolean AllowEnter;
 
-    @ConfigField(order = 10, comment = "Require players to have a specific permission to enter the dimension.")
+    @ConfigField(order = 10, comment = "Require players to have a specific permission to enter the dimension.\nNote: At the moment permissions are only supported by the plugin version.")
     public boolean RequireEnterPermission;
 
     @ConfigField(order = 11, comment = "The permission needed for players to enter.")
@@ -40,7 +40,7 @@ public class DimensionData {
     @ConfigField(order = 12, comment = "Whether players are allowed to leave the dimension.")
     public boolean AllowLeave;
 
-    @ConfigField(order = 13, comment = "Require players to have a specific permission to leave.")
+    @ConfigField(order = 13, comment = "Require players to have a specific permission to leave.\nNote: At the moment permissions are only supported by the plugin version.")
     public boolean RequireLeavePermission;
 
     @ConfigField(order = 14, comment = "The permission needed for players to leave.")

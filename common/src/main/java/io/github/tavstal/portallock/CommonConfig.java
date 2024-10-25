@@ -9,6 +9,13 @@ import net.minecraft.sounds.SoundEvents;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the common configuration settings for the mod.
+ * This class contains fields and methods to manage the configuration,
+ * including options that can be customized by the server administrator.
+ * It is designed to load and save configuration data, ensuring
+ * proper handling of mod settings across different server instances.
+ */
 public class CommonConfig {
 
     @ConfigField(order = 1, comment = "Shows more logs than usual. Helps locating errors.")

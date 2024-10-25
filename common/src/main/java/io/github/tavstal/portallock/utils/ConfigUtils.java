@@ -14,11 +14,33 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Utility class for handling configuration-related operations.
+ *
+ * <p>
+ * This class provides methods to load, save, and manipulate configuration
+ * settings in a structured way. It may also include methods for
+ * validating configuration values and managing default settings.
+ * </p>
+ *
+ * @since 1.0
+ */
 public class ConfigUtils {
     private  static final String minecraftRootPath = System.getProperty("user.dir");
-    // TODO: Fix PlatformHelper
     private static final Path configFilePath = CommonClass.IsPlugin() ? Paths.get(minecraftRootPath, "plugins", "RespawnTimer", "respawn-timer.toml") : Paths.get(minecraftRootPath, "config", "respawn-timer.toml");
 
+    /**
+     * Loads the configuration settings from the configuration file.
+     *
+     * <p>
+     * This method reads the configuration file and populates a
+     * {@link CommonConfig} object with the values specified in the file.
+     * If the configuration file does not exist or is invalid,
+     * default values may be applied.
+     * </p>
+     *
+     * @return a {@link CommonConfig} object containing the loaded configuration settings.
+     */
     public static CommonConfig LoadConfig() {
         try {
             File configFile = configFilePath.toFile();
@@ -68,6 +90,20 @@ public class ConfigUtils {
         }
     }
 
+    /**
+     * Saves the specified configuration settings to the configuration file.
+     *
+     * <p>
+     * This method serializes the provided {@link CommonConfig} object
+     * and writes its values to the configuration file. If the file already
+     * exists, it will be overwritten. Comments will be added based on the
+     * {@link ConfigField} annotations in the config fields.
+     * </p>
+     *
+     * @param config the {@link CommonConfig} object containing the configuration settings
+     *               to be saved. Must not be {@code null}.
+     * @throws IllegalArgumentException if the provided config object is {@code null}.
+     */
     public static void SaveConfig(CommonConfig config)
     {
         File configFile = configFilePath.toFile();

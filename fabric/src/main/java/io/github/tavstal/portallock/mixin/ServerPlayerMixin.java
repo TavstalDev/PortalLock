@@ -14,7 +14,7 @@ public class ServerPlayerMixin {
     @Inject(method = "changeDimension(Lnet/minecraft/world/level/portal/DimensionTransition;)Lnet/minecraft/world/entity/Entity;", at = @At("HEAD"), cancellable = true)
     private void injected(DimensionTransition dimensionTransition, CallbackInfoReturnable<Entity> cir){
         ServerPlayer serverPlayer = (ServerPlayer)(Object)this;
-        if (!CommonClass.AttemptDimensionChange(serverPlayer, serverPlayer.serverLevel(), dimensionTransition.newLevel())) {
+        if (CommonClass.shouldPreventDimensionChange(serverPlayer, serverPlayer.serverLevel(), dimensionTransition.newLevel())) {
             cir.setReturnValue(null);
         }
     }
