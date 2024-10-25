@@ -2,12 +2,16 @@ package io.github.tavstal.portallock;
 
 import io.github.tavstal.portallock.models.ConfigField;
 import io.github.tavstal.portallock.models.DimensionData;
+import io.github.tavstal.portallock.models.ESoundType;
 import io.github.tavstal.portallock.models.Message;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Represents the common configuration settings for the mod.
@@ -49,16 +53,13 @@ public class CommonConfig {
     public Message LeaveFailAutoAllow;
 
     @ConfigField(order = 11, comment = "The sound event triggered on successful entry.")
-    public SoundEvent SuccessEnterSound;
+    public String SuccessSound;
 
-    @ConfigField(order = 12, comment = "The sound event triggered on successful exit.")
-    public SoundEvent SuccessLeaveSound;
+    @ConfigField(order = 12, comment = "The sound event triggered on failed entry.")
+    public String FailEnterSound;
 
-    @ConfigField(order = 13, comment = "The sound event triggered on failed entry.")
-    public SoundEvent FailEnterSound;
-
-    @ConfigField(order = 14, comment = "The sound event triggered on failed exit.")
-    public SoundEvent FailLeaveSound;
+    @ConfigField(order = 13, comment = "The sound event triggered on failed exit.")
+    public String FailLeaveSound;
 
     @ConfigField(order = 100, comment = "DO NOT TOUCH THIS. This helps handlig config related changes after updates.")
     public int FileVersion;
@@ -66,85 +67,111 @@ public class CommonConfig {
     public CommonConfig() {
         EnableDebugMode = false;
         Dimensions = new ArrayList<>();
-        EnterSuccess = new Message(
+        EnterSuccess =  new Message(
                 true,
                 "§aEntering",
                 "§e%display_name%",
                 false,
-                "Entering %display_name%.",
+                "§aEntering §e%display_name%§a.",
                 false,
-                "Entering %display_name%."
+                "§aEntering §e%display_name%§a."
         );
-        EnterFail = new Message(
+        EnterFail =  new Message(
                 false,
                 "§cFailed to enter",
                 "§e%display_name%",
                 true,
-                "Failed to enter into %display_name%.",
+                "§cFailed to enter into §e%display_name%§c.",
                 false,
-                "Failed to enter into %display_name%."
+                "§cFailed to enter into §e%display_name%§c."
         );
-        EnterFailPermission = new Message(
+        EnterFailPermission =  new Message(
                 false,
                 "§cFailed to enter",
                 "§e%display_name%",
                 true,
-                "Failed to enter into %display_name% because of missing permission.",
+                "§cFailed to enter into §e%display_name%§c because of missing permission.",
                 false,
-                "Failed to enter into %display_name% because of missing permission."
+                "§cFailed to enter into §e%display_name%§c because of missing permission."
         );
-        EnterFailAutoAllow = new Message(
+        EnterFailAutoAllow =  new Message(
                 false,
                 "§cFailed to enter",
                 "§e%display_name%",
                 true,
-                "Unable to enter into %display_name%. The dimension will be unlocked after %time_left_to_unlock%s.",
+                "§cUnable to enter into §e%display_name%§c. The dimension will be unlocked after §e%time_left_to_unlock%s§c.",
                 false,
-                "Unable to enter into %display_name%. The dimension will be unlocked at %time_left_to_unlock%s"
+                "§cUnable to enter into §e%display_name%§c. The dimension will be unlocked at §e%time_left_to_unlock%s§c."
         );
 
-        LeaveSuccess = new Message(
+        LeaveSuccess =  new Message(
                 true,
                 "§aLeaving",
                 "§e%display_name%",
                 false,
-                "Leaving %display_name%.",
+                "§aLeaving §e%display_name%§a.",
                 false,
-                "Leaving %display_name%."
+                "§aLeaving §e%display_name%§a."
         );
-        LeaveFail = new Message(
+        LeaveFail =  new Message(
                 false,
                 "§cFailed to leave",
                 "§e%display_name%",
                 true,
-                "Failed to leave from %display_name%.",
+                "§cFailed to leave from §e%display_name%§c.",
                 false,
-                "Failed to leave from %display_name%."
+                "§cFailed to leave from §e%display_name%§c."
         );
-        LeaveFailPermission = new Message(
+        LeaveFailPermission =  new Message(
                 false,
                 "§cFailed to leave",
                 "§e%display_name%",
                 true,
-                "Failed to leave from %display_name% because of missing permission.",
+                "§cFailed to leave from §e%display_name%§c because of missing permission.",
                 false,
-                "Failed to leave from %display_name% because of missing permission."
+                "§cFailed to leave from §e%display_name%§c because of missing permission."
         );
-        LeaveFailAutoAllow = new Message(
+        LeaveFailAutoAllow =  new Message(
                 false,
                 "§cFailed to leave",
                 "§e%display_name%",
                 true,
-                "Unable to leave from %display_name%. The dimension will allow you to leave after %time_left_to_unlock%s.",
+                "§cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%s§c.",
                 false,
-                "Unable to leave from %display_name%. The dimension will allow you to leave after %time_left_to_unlock%s."
+                "§cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%s§c."
         );
 
-        SuccessEnterSound = SoundEvents.PLAYER_LEVELUP;
-        SuccessLeaveSound = SoundEvents.PLAYER_LEVELUP;
-        FailEnterSound = SoundEvents.VILLAGER_NO;
-        FailLeaveSound = SoundEvents.VILLAGER_NO;
+        SuccessSound =  SoundEvents.PLAYER_LEVELUP.getLocation().toString();
+        FailEnterSound =  SoundEvents.VILLAGER_NO.getLocation().toString();
+        FailLeaveSound =  SoundEvents.VILLAGER_NO.getLocation().toString();
 
         FileVersion = 1;
+    }
+
+    public SoundEvent GetSoundEvent(ESoundType type) {
+        String value = "";
+        try {
+            switch (type) {
+                case ESoundType.Success -> {
+                    value = SuccessSound;
+                }
+                case ESoundType.FailEnter -> {
+                    value = FailEnterSound;
+                }
+                case ESoundType.FailLeave -> {
+                    value = FailLeaveSound;
+                }
+            }
+
+            if (value.equalsIgnoreCase("none"))
+                return null;
+
+            return SoundEvent.createVariableRangeEvent(ResourceLocation.parse(value));
+        }
+        catch (Exception ex) {
+            CommonClass.LOG.warn(MessageFormat.format("Invalid sound value ''{0}''.", value));
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+            return null;
+        }
     }
 }
