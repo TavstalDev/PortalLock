@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class ConfigUtils {
     private  static final String minecraftRootPath = System.getProperty("user.dir");
-    private static final Path configFilePath = CommonClass.IsPlugin() ? Paths.get(minecraftRootPath, "plugins", "RespawnTimer", "respawn-timer.toml") : Paths.get(minecraftRootPath, "config", "respawn-timer.toml");
+    private static final Path configFilePath = CommonClass.IsPlugin() ? Paths.get(minecraftRootPath, "plugins", CommonClass.MOD_NAME, CommonClass.MOD_ID + ".toml") : Paths.get(minecraftRootPath, "config", CommonClass.MOD_ID + ".toml");
 
     /**
      * Loads the configuration settings from the configuration file.
