@@ -3,14 +3,20 @@ package io.github.tavstal.portallock.models;
 import io.github.tavstal.portallock.utils.ModUtils;
 import io.github.tavstal.portallock.utils.PlayerUtils;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.datafix.fixes.ObjectiveRenderTypeFix;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Message {
+    @ConfigField(order = 1)
     public  MessageTitleComponent Title;
+    @ConfigField(order = 2)
     public MessageChatComponent Chat;
+    @ConfigField(order = 3)
     public MessageChatComponent ActionBar;
+
+    public Message() {}
 
     public Message(MessageTitleComponent title, MessageChatComponent chat, MessageChatComponent actionBar) {
         Title = title;

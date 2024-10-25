@@ -46,6 +46,8 @@ public class DimensionData {
     @ConfigField(order = 14, comment = "The permission needed for players to leave.")
     public String LeavePermission;
 
+    public DimensionData() {}
+
     public DimensionData(String key, String displayName, boolean autoAllowByDate, String dateToAllowEnter, String dateToAllowLeave, boolean kickUnauthorizedPlayers, boolean allowKickToBed, String kickTargetDimension, boolean allowEnter, boolean requireEnterPermission, String enterPermission, boolean allowLeave, boolean requireLeavePermission, String leavePermission) {
         Key = key;
         DisplayName = displayName;
