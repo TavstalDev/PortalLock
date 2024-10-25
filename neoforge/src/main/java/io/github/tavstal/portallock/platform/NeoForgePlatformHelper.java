@@ -1,6 +1,7 @@
 package io.github.tavstal.portallock.platform;
 
 import io.github.tavstal.portallock.platform.services.IPlatformHelper;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 
@@ -22,5 +23,10 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     public boolean isDevelopmentEnvironment() {
 
         return !FMLLoader.isProduction();
+    }
+
+    @Override
+    public boolean hasPermission(ServerPlayer player, String permission) {
+        return  player.hasPermissions(4);
     }
 }

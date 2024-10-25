@@ -1,5 +1,7 @@
 package io.github.tavstal.portallock.platform.services;
 
+import net.minecraft.server.level.ServerPlayer;
+
 public interface IPlatformHelper {
 
     /**
@@ -33,4 +35,13 @@ public interface IPlatformHelper {
 
         return isDevelopmentEnvironment() ? "development" : "production";
     }
+
+    /**
+     * Checks if a given player has the specified permission.
+     *
+     * @param player The {@link ServerPlayer} whose permissions are to be checked.
+     * @param permission The permission string to check, typically in dot notation (e.g., "myplugin.use").
+     * @return {@code true} if the player has the specified permission; {@code false} otherwise.
+     */
+    boolean hasPermission(ServerPlayer player, String permission);
 }
