@@ -7,12 +7,19 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 public class EventListener {
     @SubscribeEvent
     public void onServerStart(ServerStartedEvent event) {
         CommonClass.init(event.getServer(), false);
+    }
+
+    @SubscribeEvent
+    public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        Player player = event.getEntity();
+        CommonClass.checkDimension(PlayerUtils.GetServerPlayer(player));
     }
 
     @SubscribeEvent
@@ -28,6 +35,6 @@ public class EventListener {
         ServerLevel fromLevel = server.getLevel(player.level().dimension());
         ServerLevel toLevel = server.getLevel(event.getDimension());
 
-        event.setCanceled(!CommonClass.AttemptDimensionChange(PlayerUtils.GetServerPlayer(player), fromLevel, toLevel));
+        event.setCanceled(CommonClass.shouldPreventDimensionChange(PlayerUtils.GetServerPlayer(player), fromLevel, toLevel));
     }
 }

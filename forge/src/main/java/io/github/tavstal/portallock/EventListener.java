@@ -1,8 +1,6 @@
 package io.github.tavstal.portallock;
 
-import io.github.tavstal.portallock.utils.ModUtils;
 import io.github.tavstal.portallock.utils.PlayerUtils;
-import io.github.tavstal.portallock.utils.WorldUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,6 +16,12 @@ public class EventListener {
     }
 
     @SubscribeEvent
+    public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        Player player = event.getEntity();
+        CommonClass.checkDimension(PlayerUtils.GetServerPlayer(player));
+    }
+
+    @SubscribeEvent
     public void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
         Player player = event.getEntity();
         MinecraftServer server = player.getServer();
@@ -27,6 +31,6 @@ public class EventListener {
         ServerLevel fromLevel = server.getLevel(event.getFrom());
         ServerLevel toLevel = server.getLevel(event.getTo());
 
-        event.setCanceled(!CommonClass.AttemptDimensionChange(PlayerUtils.GetServerPlayer(player), fromLevel, toLevel));
+        event.setCanceled(CommonClass.shouldPreventDimensionChange(PlayerUtils.GetServerPlayer(player), fromLevel, toLevel));
     }
 }

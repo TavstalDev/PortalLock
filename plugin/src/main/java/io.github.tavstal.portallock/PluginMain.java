@@ -1,6 +1,5 @@
 package io.github.tavstal.portallock;
 
-import com.destroystokyo.paper.event.server.ServerTickEndEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.craftbukkit.CraftServer;
@@ -8,7 +7,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +17,12 @@ public class PluginMain extends JavaPlugin implements Listener {
     public void onEnable() {
         CommonClass.init(((CraftServer)this.getServer()).getServer(), true);
         this.getServer().getPluginManager().registerEvents(this, this);
+    }
+
+    @EventHandler
+    public void onPlayerConnected(PlayerJoinEvent event) {
+        ServerPlayer mcPlayer = ((CraftPlayer) event.getPlayer()).getHandle();
+        CommonClass.checkDimension(mcPlayer);
     }
 
     @EventHandler
@@ -31,6 +36,6 @@ public class PluginMain extends JavaPlugin implements Listener {
         ServerLevel toLevel = ((CraftWorld)event.getTo().getWorld()).getHandle();
 
         ServerPlayer mcPlayer = ((CraftPlayer) event.getPlayer()).getHandle();
-        event.setCancelled(!CommonClass.AttemptDimensionChange(mcPlayer, fromLevel, toLevel));
+        event.setCancelled(CommonClass.shouldPreventDimensionChange(mcPlayer, fromLevel, toLevel));
     }
 }
