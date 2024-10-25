@@ -14,10 +14,6 @@ java {
 
 dependencies {
     paperweight.paperDevBundle("${minecraft_version}-${paper_version}")
-
-    // Night Config
-    implementation "com.electronwill.night-config:toml:3.7.1"
-    compileOnly "com.electronwill.night-config:toml:3.7.1"
 }
 
 artifacts {
