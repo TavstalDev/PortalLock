@@ -1,6 +1,7 @@
 package io.github.tavstal.portallock.utils;
 
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.github.tavstal.portallock.CommonClass;
 import io.github.tavstal.portallock.CommonConfig;
 import io.github.tavstal.portallock.models.ConfigField;
@@ -8,10 +9,11 @@ import io.github.tavstal.portallock.models.ConfigField;
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,130 +28,237 @@ import java.util.List;
  * @since 1.0
  */
 public class ConfigUtils {
-    private  static final String minecraftRootPath = System.getProperty("user.dir");
-    private static final Path configFilePath = CommonClass.IsPlugin() ? Paths.get(minecraftRootPath, "plugins", CommonClass.MOD_NAME, CommonClass.MOD_ID + ".toml") : Paths.get(minecraftRootPath, "config", CommonClass.MOD_ID + ".toml");
+    private static final String minecraftRootPath = System.getProperty("user.dir");
+    private static final Path configFilePath = CommonClass.IsPlugin() ? Paths.get(minecraftRootPath, "plugins", CommonClass.MOD_NAME, CommonClass.MOD_ID + ".jsonc") : Paths.get(minecraftRootPath, "config", CommonClass.MOD_ID + ".jsonc");
+    private static final Gson gson = new GsonBuilder()
+            .setPrettyPrinting() // Enables pretty printing
+            .create();
 
     /**
-     * Loads the configuration settings from the configuration file.
+     * Loads the configuration settings from a predefined configuration file.
      *
-     * <p>
-     * This method reads the configuration file and populates a
-     * {@link CommonConfig} object with the values specified in the file.
-     * If the configuration file does not exist or is invalid,
-     * default values may be applied.
-     * </p>
+     * <p>This method reads the configuration data, typically stored in JSON
+     * or YAML format, and deserializes it into a {@link CommonConfig} object,
+     * which contains the application's configurable settings.</p>
      *
-     * @return a {@link CommonConfig} object containing the loaded configuration settings.
+     * <p>If the configuration file does not exist or cannot be read, this
+     * method may return a default instance of {@link CommonConfig} with default
+     * values, or it may throw an exception based on the implementation.</p>
+     *
+     * @return An instance of {@link CommonConfig} containing the loaded configuration
+     * settings.
      */
-    public static CommonConfig LoadConfig() {
-        try {
-            File configFile = configFilePath.toFile();
-            CommonConfig config = null;
+    public static CommonConfig loadConfig() {
+        CommonConfig result = new CommonConfig();
 
+        try {
+            // Load Defaults
+            var configFile = configFilePath.toFile();
             if (!configFile.exists()) {
                 try {
                     File parentDir = configFile.getParentFile();
                     if (!parentDir.exists()) {
-                        parentDir.mkdirs();
+                        boolean mkdirs = parentDir.mkdirs();
                     }
 
-                    // Create a new instance of the config class with default values
-                    config = CommonConfig.class.getDeclaredConstructor().newInstance();
-                    SaveConfig(config);  // Save the new config file with default values
-                    return config;
+                    saveConfig(result);  // Save the new config file with default values
+                    return result;
                 } catch (Exception e) {
                     CommonClass.LOG.error("Failed to load default configs.");
                     CommonClass.LOG.error(e.getLocalizedMessage());
-                    return null;
+                    return result;
                 }
             }
-
-            CommentedFileConfig fileConfig = CommentedFileConfig.builder(configFile).sync().build();
-            fileConfig.load();
-
-            try {
-                config = CommonConfig.class.getDeclaredConstructor().newInstance();  // Create an instance of the config class
-                // Use reflection to load all fields automatically
-                for (Field field : CommonConfig.class.getDeclaredFields()) {
-                    field.setAccessible(true);
-                    Object value = fileConfig.getOrElse(field.getName(), field.get(config));
-                    field.set(config, value);  // Assign the value from the file to the field
-                }
-            } catch (Exception e) {
-                CommonClass.LOG.error("Failed to load configs.");
-                CommonClass.LOG.error(e.getLocalizedMessage());
-            }
-
-            return config;
-        }
-        catch (Exception ex)
-        {
-            CommonClass.LOG.error("Error during executing method 'LoadConfig':");
+            
+            result = deserializeJSONC(Files.readAllLines(configFilePath), CommonConfig.class);
+        } catch (Exception ex) {
+            CommonClass.LOG.error("Error in loadConfig()");
             CommonClass.LOG.error(ex.getLocalizedMessage());
-            return null;
+        }
+
+        return result;
+    }
+
+    /**
+     * Saves the given configuration settings to a configuration file.
+     *
+     * <p>This method serializes the provided {@link CommonConfig} object
+     * and writes it to the application's configuration file in JSON or YAML format,
+     * preserving the current configuration state.</p>
+     *
+     * <p>If the file does not exist, this method may create it. If the file
+     * already exists, it may overwrite it with the updated configuration values.</p>
+     *
+     * @param config The {@link CommonConfig} instance containing the settings
+     *               to be saved.
+     */
+    public static void saveConfig(CommonConfig config) {
+        try (FileWriter writer = new FileWriter(configFilePath.toFile())) {
+            writer.write(serializeJSONC(config, 1, true));
+        } catch (Exception ex) {
+            CommonClass.LOG.error("Error in saveConfig()");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
         }
     }
 
     /**
-     * Saves the specified configuration settings to the configuration file.
-     *
+     * Serializes an object to a JSONC (JSON with comments) format.
      * <p>
-     * This method serializes the provided {@link CommonConfig} object
-     * and writes its values to the configuration file. If the file already
-     * exists, it will be overwritten. Comments will be added based on the
-     * {@link ConfigField} annotations in the config fields.
+     * This method converts the specified object into a JSONC string representation.
+     * JSONC allows for comments within the JSON structure, making it easier to
+     * annotate the data. The method can control the indentation level for better
+     * readability and can also add start and end brackets depending on the
+     * specified parameter.
      * </p>
+     * @param obj          The object to serialize to JSONC. This can be any
+     *                     object that can be converted to JSON, such as
+     *                     primitives, arrays, or collections.
+     * @param indentLevel  The level of indentation to use for formatting the
+     *                     output. A value of 0 indicates no indentation, while
+     *                     higher values increase the indentation level for
+     *                     nested structures.
+     * @param addStartBrackets  A boolean flag indicating whether to include
+     *                          starting and ending brackets in the output.
+     *                          If true, the serialized output will be enclosed
+     *                          in curly braces (for objects).
+     *                          If false, no brackets will be added.
      *
-     * @param config the {@link CommonConfig} object containing the configuration settings
-     *               to be saved. Must not be {@code null}.
-     * @throws IllegalArgumentException if the provided config object is {@code null}.
+     * @return A string representation of the object in JSONC format.
+     *         The string will include comments, proper indentation,
+     *         and, if specified, starting and ending brackets.
+     *
+     * @throws IllegalArgumentException if the input object cannot be
+     *         serialized to JSONC.
      */
-    public static void SaveConfig(CommonConfig config)
-    {
-        File configFile = configFilePath.toFile();
-        StringBuilder tomlContent = new StringBuilder();
-        try (FileWriter fileWriter = new FileWriter(configFile))
-        {
-            CommentedFileConfig commentedFileConfig = CommentedFileConfig.builder(configFile)
-                    .sync()
-                    .build();
+    private static String serializeJSONC(Object obj, int indentLevel, boolean addStartBrackets) {
+        StringBuilder result = new StringBuilder();
+        String indent = "  ".repeat(indentLevel); // Create indentation string
+        try {
+            Class<?> objClass = obj.getClass();
+            if (addStartBrackets)
+                result.append("{\n");
+            int fieldIndex = 0;
+            for (Field field : objClass.getDeclaredFields()) {
+                field.setAccessible(true);  // Allow access to private fields
+                String endCharacter = "";
+                if (fieldIndex + 1 != objClass.getDeclaredFields().length)
+                    endCharacter = ",";
 
-            // Get fields and sort them by the ConfigField annotation
-            List<Field> sortedFields = Arrays.stream(config.getClass().getDeclaredFields())
-                    .peek(field -> field.setAccessible(true)) // Make private fields accessible
-                    .sorted(Comparator.comparingInt(field -> {
-                        ConfigField annotation = field.getAnnotation(ConfigField.class);
-                        return annotation != null ? annotation.order() : Integer.MAX_VALUE;
-                    }))
-                    .toList();
-
-            // Use reflection to save all fields automatically
-            for (Field field : sortedFields) {
                 try {
-                    ConfigField annotation = field.getAnnotation(ConfigField.class);
-                    if (annotation != null) {
-                        String comment = annotation.comment();
+                    Object value = field.get(obj);
+                    String valueSerialized = serialize(value);
+                    String fieldName = field.getName();
 
-                        // Add comment to the TOML content
-                        if (!comment.isBlank())
-                            tomlContent.append("# ").append(comment).append("\n");
+                    // Add comments
+                    if (field.isAnnotationPresent(ConfigField.class)) {
+                        var configField = field.getAnnotation(ConfigField.class);
+                        String comment = configField.comment();
+                        if (!comment.isBlank()) {
+                            if (comment.contains("\n")) {
+                                comment = comment.replaceAll("\n", "\n" + indent + "// ");
+                            }
+                            result.append(MessageFormat.format("{0}// {1}\n", indent, comment));
+                        }
                     }
-                    tomlContent.append(field.getName()).append(" = ");
-                    Object value = field.get(config);
-                    tomlContent.append(value instanceof String ? "\"" + value + "\"" : value);
-                    tomlContent.append("\n\n");
+
+                    if (value instanceof Collection<?> collection) {
+                        // Handle collections
+                        result.append(MessageFormat.format("{0}\"{1}\":\n", indent, fieldName));
+                        int collectionIndex = 0;
+                        result.append(MessageFormat.format("{0}[\n", indent));
+                        for (Object item : collection) {
+                            result.append(MessageFormat.format("{0}  '{'\n", indent)); // Indent for items
+                            result.append(serializeJSONC(item, indentLevel + 2, false));
+                            if (collection.size() != collectionIndex + 1)
+                                result.append(MessageFormat.format("{0}  '}',\n", indent));
+                            else
+                                result.append(MessageFormat.format("{0}  '}'\n", indent));
+                            collectionIndex++;
+                        }
+                        result.append(MessageFormat.format("{0}]{1}\n", indent, endCharacter));
+                    } else if (!field.getType().isPrimitive() && !field.getType().equals(String.class)) {
+                        // Handle nested objects
+                        result.append(MessageFormat.format("{0}\"{1}\":\n", indent, fieldName));
+                        result.append(MessageFormat.format("{0}'{'\n", indent));
+                        result.append(serializeJSONC(value, indentLevel + 1, false));
+                        result.append(MessageFormat.format("{0}'}'{1}\n", indent, endCharacter));
+                    } else {
+                        result.append(MessageFormat.format("{0}\"{1}\": {2}{3}\n", indent, fieldName, valueSerialized, endCharacter));
+                    }
+
+
                 } catch (IllegalAccessException e) {
-                    CommonClass.LOG.error("Failed to load config variable values while saving.");
-                    CommonClass.LOG.error(e.getLocalizedMessage());
+                    throw new RuntimeException("Error accessing field: " + field.getName(), e);
                 }
+                fieldIndex++;
+            }
+            if (addStartBrackets)
+                result.append("}");
+        }
+        catch (Exception ex) {
+            CommonClass.LOG.error("Error in serializeJSONC()");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+        }
+        return result.toString();
+    }
+
+    /**
+     * Deserializes a list of JSONC lines into an object of the specified type.
+     *
+     * This method removes comments from the provided JSONC lines and then converts the
+     * resulting JSON string into an object of type {@code T}. The comments can be
+     * single-line (//) or multi-line (/* ... /*).
+     *
+     * @param jsoncLines the list of strings representing JSONC lines, which may include comments
+     * @param clazz the class of type {@code T} to which the JSON should be deserialized
+     * @param <T> the type of the object to be deserialized
+     * @return an instance of {@code T} populated with data from the JSON, or {@code null}
+     *         if deserialization fails due to malformed JSON or other issues
+     */
+    private static <T> T deserializeJSONC(List<String> jsoncLines, Class<T> clazz) {
+        StringBuilder jsonBuilder = new StringBuilder();
+        boolean foundMultilineComment = false;
+        for (String line : jsoncLines) {
+            // Check for multiline comment start
+            if (line.contains("/*")) {
+                foundMultilineComment = true;
+                // Keep the part of the line before the multiline comment
+                jsonBuilder.append(line, 0, line.indexOf("/*"));
             }
 
-            // Write the content to the file
-            fileWriter.write(tomlContent.toString());
+            // Check for single-line comments and ignore them
+            if (line.contains("//") && !foundMultilineComment) {
+                jsonBuilder.append(line, 0, line.indexOf("//"));
+                continue;
+            }
+
+            // If we are in a multiline comment, check for its end
+            if (foundMultilineComment) {
+                foundMultilineComment = !line.contains("*/");
+                // If the line contains the end of the comment, append the part after it
+                if (!foundMultilineComment) {
+                    int endCommentIndex = line.indexOf("*/") + 2;
+                    if (endCommentIndex < line.length()) {
+                        jsonBuilder.append(line.substring(endCommentIndex));
+                    }
+                }
+                continue;
+            }
+
+            // If there are no comments, append the line as is
+            jsonBuilder.append(line);
         }
-        catch (Exception e) {
-            CommonClass.LOG.error("Failed to save configs.");
-            CommonClass.LOG.error(e.getLocalizedMessage());
-        }
+
+        return gson.fromJson(jsonBuilder.toString(), clazz);
+    }
+
+    /**
+     * Serializes an object to a JSON string.
+     *
+     * @param obj The object to be serialized.
+     * @return The JSON representation of the object as a string.
+     */
+    private static String serialize(Object obj) {
+        return gson.toJson(obj);
     }
 }

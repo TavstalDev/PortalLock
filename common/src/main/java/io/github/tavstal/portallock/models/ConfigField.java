@@ -5,6 +5,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigField {
-    int order();
     String comment() default "";
 }
