@@ -1,19 +1,16 @@
 package io.github.tavstal.portallock.models;
 
+import io.github.tavstal.portallock.CommonClass;
 import io.github.tavstal.portallock.utils.ModUtils;
 import io.github.tavstal.portallock.utils.PlayerUtils;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.datafix.fixes.ObjectiveRenderTypeFix;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Message {
-    @ConfigField(order = 1)
     public  MessageTitleComponent Title;
-    @ConfigField(order = 2)
     public MessageChatComponent Chat;
-    @ConfigField(order = 3)
     public MessageChatComponent ActionBar;
 
     public Message() {}
@@ -43,7 +40,7 @@ public class Message {
     }
 
     private void SendToPlayer(ServerPlayer player, String displayName, String date) {
-        LocalDateTime localDate = LocalDateTime.parse(date);
+        LocalDateTime localDate = LocalDateTime.parse(date, CommonClass.DateFormatter);
         String remainingTime = String.format("%s", Duration.between(LocalDateTime.now(), localDate).getSeconds());
 
         if (Chat.Enable) {
