@@ -1,5 +1,6 @@
 package io.github.tavstal.portallock;
 
+import com.destroystokyo.paper.event.server.ServerTickEndEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.craftbukkit.CraftServer;
@@ -17,6 +18,11 @@ public class PluginMain extends JavaPlugin implements Listener {
     public void onEnable() {
         CommonClass.init(((CraftServer)this.getServer()).getServer(), true);
         this.getServer().getPluginManager().registerEvents(this, this);
+    }
+
+    @EventHandler
+    public void onServerTick(ServerTickEndEvent event) {
+        CommonClass.serverTick(((CraftServer)this.getServer()).getServer());
     }
 
     @EventHandler
