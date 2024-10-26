@@ -5,6 +5,7 @@ import io.github.tavstal.portallock.utils.ModUtils;
 import io.github.tavstal.portallock.utils.PlayerUtils;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -41,7 +42,21 @@ public class Message {
 
     private void SendToPlayer(ServerPlayer player, String displayName, String date) {
         LocalDateTime localDate = LocalDateTime.parse(date, CommonClass.DateFormatter);
-        String remainingTime = String.format("%s", Duration.between(LocalDateTime.now(), localDate).getSeconds());
+        var duration  = Duration.between(LocalDateTime.now(), localDate);
+        String remainingTime = "";
+        long days = duration.toDaysPart();
+        int hours = duration.toHoursPart();
+        int minutes = duration.toMinutesPart();
+        int seconds = duration.toSecondsPart();
+
+        if (days > 0)
+            remainingTime += MessageFormat.format(CommonClass.CONFIG().TimeDaysFormat + " ", days);
+        if (hours > 0)
+            remainingTime += MessageFormat.format(CommonClass.CONFIG().TimeHoursFormat + " ", hours);
+        if (minutes > 0)
+            remainingTime += MessageFormat.format(CommonClass.CONFIG().TimeMinutesFormat + " ", minutes);
+        if (seconds > 0)
+            remainingTime += MessageFormat.format(CommonClass.CONFIG().TimeSecondsFormat + " ", seconds);
 
         if (Chat.Enable) {
             player.sendSystemMessage(ModUtils.Literal(Chat.Message.replaceAll("%display_name%", displayName).replaceAll("%time_left_to_unlock%", remainingTime)));

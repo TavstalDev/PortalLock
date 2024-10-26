@@ -63,6 +63,11 @@ public class CommonConfig {
     @ConfigField(comment = "The sound event triggered on failed exit.")
     public String FailLeaveSound;
 
+    public String TimeDaysFormat;
+    public String TimeHoursFormat;
+    public String TimeMinutesFormat;
+    public String TimeSecondsFormat;
+
     @ConfigField(comment = "DO NOT TOUCH THIS. This helps handlig config related changes after updates.")
     public int FileVersion;
 
@@ -102,9 +107,9 @@ public class CommonConfig {
                 "§cFailed to enter",
                 "§e%display_name%",
                 true,
-                "§cUnable to enter into §e%display_name%§c. The dimension will be unlocked after §e%time_left_to_unlock%s§c.",
+                "§cUnable to enter into §e%display_name%§c. The dimension will be unlocked after §e%time_left_to_unlock%",
                 false,
-                "§cUnable to enter into §e%display_name%§c. The dimension will be unlocked at §e%time_left_to_unlock%s§c."
+                "§cUnable to enter into §e%display_name%§c. The dimension will be unlocked at §e%time_left_to_unlock%"
         );
 
         LeaveSuccess =  new Message(
@@ -139,14 +144,19 @@ public class CommonConfig {
                 "§cFailed to leave",
                 "§e%display_name%",
                 true,
-                "§cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%s§c.",
+                "§cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%",
                 false,
-                "§cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%s§c."
+                "§cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%"
         );
 
         SuccessSound =  SoundEvents.PLAYER_LEVELUP.getLocation().toString();
         FailEnterSound =  SoundEvents.VILLAGER_NO.getLocation().toString();
         FailLeaveSound =  SoundEvents.VILLAGER_NO.getLocation().toString();
+
+        TimeDaysFormat = "§e{0} §aday(s)";
+        TimeHoursFormat = "§e{0} §ahour(s)";
+        TimeMinutesFormat = "§e{0} §aminute(s)";
+        TimeSecondsFormat = "§e{0} §asecond(s)";
 
         FileVersion = 1;
     }
