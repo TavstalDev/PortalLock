@@ -77,7 +77,6 @@ public class CommonClass {
     public static CommonConfig CONFIG() {
         if (_config == null) {
             _config = ConfigUtils.loadConfig();
-            LOG.debug("Config null ? " + (_config == null));
         }
         return _config;
     }
@@ -104,7 +103,7 @@ public class CommonClass {
 
             // Populate dimensions
             if (CONFIG().Dimensions == null || CONFIG().Dimensions.isEmpty()) {
-                List<DimensionData> dimensions = new ArrayList<DimensionData>();
+                List<DimensionData> dimensions = new ArrayList<>();
                 for (var level : server.getAllLevels()) {
                     String name = WorldUtils.GetName(level);
                     String displayName;
@@ -123,7 +122,8 @@ public class CommonClass {
                 ConfigUtils.saveConfig(_config);
             }
 
-            var commandDispatcher = server.getCommands().getDispatcher();
+            // TODO: Commands
+            //var commandDispatcher = server.getCommands().getDispatcher();
             //RespawnCommand.register(commandDispatcher);
 
             LOG.info(MOD_NAME + " has been loaded.");
@@ -147,9 +147,48 @@ public class CommonClass {
      *               players, worlds, and other relevant game data.
      */
     public static void serverTick(MinecraftServer server) {
-        // TODO: Auto unlock
-        if (server.getTickCount() % 10 != 0)
+        // Default is every 15 minutes
+        if (server.getTickCount() % (CONFIG().UpdateInterval * 60 * 20) != 0)
             return;
+
+        List<DimensionData> dimensionsToUpdate = new ArrayList<>();
+
+        for (var level : server.getAllLevels()) {
+            String name = WorldUtils.GetName(level);
+            DimensionData dimensionData = null;
+            for (var dimension : CONFIG().Dimensions) {
+                if (Objects.equals(dimension.Key, name)) {
+                    dimensionData = dimension;
+                    break;
+                }
+            }
+
+            if (dimensionData == null)
+                continue;
+
+            if (!dimensionData.AutoAllowByDate)
+                continue;
+
+            boolean shouldUpdateDim = false;
+            if (!dimensionData.AllowEnter)
+                if (Duration.between(LocalDateTime.now(), dimensionData.GetEnterDate()).getSeconds() <= 0) {
+                    dimensionData.AllowEnter = true;
+                    shouldUpdateDim = true;
+                }
+
+            if (!dimensionData.AllowLeave)
+                if (Duration.between(LocalDateTime.now(), dimensionData.GetLeaveDate()).getSeconds() <= 0) {
+                    dimensionData.AllowLeave = true;
+                    shouldUpdateDim = true;
+                }
+
+            if (shouldUpdateDim)
+                dimensionsToUpdate.add(dimensionData);
+        }
+
+        if (!dimensionsToUpdate.isEmpty())
+            ConfigUtils.saveConfig(_config);
+
     }
 
     /**
@@ -205,7 +244,12 @@ public class CommonClass {
                     newDimensionData = dimensionData;
             }
 
-            var playerLevel = player.level();
+            net.minecraft.world.level.Level playerLevel = null;
+            try {
+                playerLevel = player.level();
+            } catch(Exception ex) { /* ignore */}
+            if (playerLevel == null)
+                return  false;
 
             if (oldDimensionData != null) {
                 if (oldDimensionData.RequireLeavePermission && Services.PLATFORM.hasPermission(player, oldDimensionData.LeavePermission)) {

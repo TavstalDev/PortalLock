@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundEvents;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Represents the common configuration settings for the mod.
@@ -24,6 +23,9 @@ public class CommonConfig {
 
     @ConfigField(comment = "Shows more logs than usual. Helps locating errors.")
     public boolean EnableDebugMode;
+
+    @ConfigField(comment = "How often should the server check the auto allow dates in minutes.")
+    public int UpdateInterval;
 
     @ConfigField(comment = "List of the dimensions.\nAuto populated during first start.")
     public List<DimensionData> Dimensions;
@@ -66,6 +68,7 @@ public class CommonConfig {
 
     public CommonConfig() {
         EnableDebugMode = false;
+        UpdateInterval = 15;
         Dimensions = new ArrayList<>();
         EnterSuccess =  new Message(
                 true,
