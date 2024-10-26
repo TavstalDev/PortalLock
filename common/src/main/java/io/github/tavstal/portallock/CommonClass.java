@@ -1,13 +1,14 @@
 package io.github.tavstal.portallock;
 
 import io.github.tavstal.portallock.models.DimensionData;
+import io.github.tavstal.portallock.models.ESoundType;
 import io.github.tavstal.portallock.platform.Services;
 import io.github.tavstal.portallock.utils.ConfigUtils;
-import io.github.tavstal.portallock.utils.PlayerUtils;
 import io.github.tavstal.portallock.utils.WorldUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -16,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +44,8 @@ public class CommonClass {
     public static final String MOD_NAME = "PortalLock";
     /** Logger instance for logging messages related to the mod. */
     public static final Logger LOG = LoggerFactory.getLogger(MOD_NAME);
+    public static final DateTimeFormatter DateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     /**
      * Indicates whether the mod is running as a plugin.
      */
@@ -73,7 +76,7 @@ public class CommonClass {
      */
     public static CommonConfig CONFIG() {
         if (_config == null) {
-            _config = ConfigUtils.LoadConfig();
+            _config = ConfigUtils.loadConfig();
             LOG.debug("Config null ? " + (_config == null));
         }
         return _config;
@@ -101,7 +104,7 @@ public class CommonClass {
 
             // Populate dimensions
             if (CONFIG().Dimensions == null || CONFIG().Dimensions.isEmpty()) {
-                List<DimensionData> dimensions = new ArrayList<>();
+                List<DimensionData> dimensions = new ArrayList<DimensionData>();
                 for (var level : server.getAllLevels()) {
                     String name = WorldUtils.GetName(level);
                     String displayName;
@@ -110,14 +113,14 @@ public class CommonClass {
                     else
                         displayName = name;
                     displayName = displayName.replaceAll("_", " ").toUpperCase();
-                    dimensions.add(new DimensionData(name, displayName, false, LocalDate.now().toString(), LocalDate.now().toString(),
+                    dimensions.add(new DimensionData(name, displayName, false, "2024-01-01 00:00", "2024-01-01 00:00",
                             true, true, "minecraft:overworld",
-                            true, false, name + ".enter", true, false, name + ".leave"
+                            true, false, name.replaceAll(":", ".") + ".enter", true, false, name.replaceAll(":", ".") + ".leave"
                             )
                     );
                 }
                 _config.Dimensions = dimensions;
-                ConfigUtils.SaveConfig(_config);
+                ConfigUtils.saveConfig(_config);
             }
 
             var commandDispatcher = server.getCommands().getDispatcher();
@@ -129,6 +132,24 @@ public class CommonClass {
             CommonClass.LOG.error("Failed to initialize the CommonClass:");
             CommonClass.LOG.error(ex.getLocalizedMessage());
         }
+    }
+
+    /**
+     * This method is called on each tick of the Minecraft server. It is intended
+     * to execute logic that should be processed regularly while the server is running.
+     *
+     * <p>The method can be used to update game mechanics, handle server-side
+     * events, or perform any periodic tasks that require access to the server's
+     * current state.</p>
+     *
+     * @param server The Minecraft server instance that is currently running. This
+     *               parameter provides access to the server's state, including
+     *               players, worlds, and other relevant game data.
+     */
+    public static void serverTick(MinecraftServer server) {
+        // TODO: Auto unlock
+        if (server.getTickCount() % 10 != 0)
+            return;
     }
 
     /**
@@ -173,51 +194,72 @@ public class CommonClass {
      *         {@code false} if the player is permitted to switch dimensions.
      */
     public static boolean shouldPreventDimensionChange(ServerPlayer player, ServerLevel oldLevel, ServerLevel newLevel) {
+        try {
+            DimensionData oldDimensionData = null;
+            DimensionData newDimensionData = null;
+            for (var dimensionData : CONFIG().Dimensions) {
+                if (Objects.equals(dimensionData.Key, WorldUtils.GetName(oldLevel)))
+                    oldDimensionData = dimensionData;
 
-        DimensionData oldDimensionData = null;
-        DimensionData newDimensionData = null;
-        for (var dimensionData : CONFIG().Dimensions) {
-            if (Objects.equals(dimensionData.Key, WorldUtils.GetName(oldLevel)))
-                oldDimensionData = dimensionData;
+                if (Objects.equals(dimensionData.Key, WorldUtils.GetName(newLevel)))
+                    newDimensionData = dimensionData;
+            }
 
-            if (Objects.equals(dimensionData.Key, WorldUtils.GetName(newLevel)))
-                newDimensionData = dimensionData;
+            var playerLevel = player.level();
+
+            if (oldDimensionData != null) {
+                if (oldDimensionData.RequireLeavePermission && Services.PLATFORM.hasPermission(player, oldDimensionData.LeavePermission)) {
+                    CONFIG().LeaveFailPermission.SendToPlayer(player, oldDimensionData, false);
+                    if (CONFIG().GetSoundEvent(ESoundType.FailLeave) != null)
+                        playerLevel.playSound(null, player.blockPosition(), CONFIG().GetSoundEvent(ESoundType.FailLeave), SoundSource.BLOCKS);
+                    return true;
+                }
+
+                if (oldDimensionData.AutoAllowByDate && Duration.between(LocalDateTime.now(), oldDimensionData.GetLeaveDate()).getSeconds() > 0) {
+                    CONFIG().LeaveFailAutoAllow.SendToPlayer(player, oldDimensionData, false);
+                    if (CONFIG().GetSoundEvent(ESoundType.FailLeave) != null)
+                        playerLevel.playSound(null, player.blockPosition(), CONFIG().GetSoundEvent(ESoundType.FailLeave), SoundSource.BLOCKS);
+                    return true;
+                }
+
+                if (!oldDimensionData.AllowLeave) {
+                    CONFIG().LeaveFail.SendToPlayer(player, oldDimensionData, false);
+                    if (CONFIG().GetSoundEvent(ESoundType.FailLeave) != null)
+                        playerLevel.playSound(null, player.blockPosition(), CONFIG().GetSoundEvent(ESoundType.FailLeave), SoundSource.BLOCKS);
+                    return true;
+                }
+            }
+
+            if (newDimensionData != null) {
+                if (newDimensionData.RequireEnterPermission && Services.PLATFORM.hasPermission(player, newDimensionData.EnterPermission)) {
+                    CONFIG().EnterFailPermission.SendToPlayer(player, newDimensionData, true);
+                    if (CONFIG().GetSoundEvent(ESoundType.FailEnter) != null)
+                        playerLevel.playSound(null, player.blockPosition(), CONFIG().GetSoundEvent(ESoundType.FailEnter), SoundSource.BLOCKS);
+                    return true;
+                }
+
+                if (newDimensionData.AutoAllowByDate && Duration.between(LocalDateTime.now(), newDimensionData.GetEnterDate()).getSeconds() > 0) {
+                    CONFIG().EnterFailAutoAllow.SendToPlayer(player, newDimensionData, true);
+                    if (CONFIG().GetSoundEvent(ESoundType.FailEnter) != null)
+                        playerLevel.playSound(null, player.blockPosition(), CONFIG().GetSoundEvent(ESoundType.FailEnter), SoundSource.BLOCKS);
+                    return true;
+                }
+
+                if (!newDimensionData.AllowEnter) {
+                    CONFIG().EnterFail.SendToPlayer(player, newDimensionData, true);
+                    if (CONFIG().GetSoundEvent(ESoundType.FailEnter) != null)
+                        playerLevel.playSound(null, player.blockPosition(), CONFIG().GetSoundEvent(ESoundType.FailEnter), SoundSource.BLOCKS);
+                    return true;
+                }
+            }
+
+            if (CONFIG().GetSoundEvent(ESoundType.Success) != null)
+                playerLevel.playSound(null, player.blockPosition(), CONFIG().GetSoundEvent(ESoundType.Success), SoundSource.BLOCKS);
+
+        } catch (Exception ex) {
+            LOG.error("Error in shouldPreventDimensionChange:");
+            LOG.error(ex.getLocalizedMessage());
         }
-
-        if (oldDimensionData != null) {
-            if (oldDimensionData.RequireLeavePermission && Services.PLATFORM.hasPermission(player, oldDimensionData.LeavePermission)) {
-                CONFIG().LeaveFailPermission.SendToPlayer(player, oldDimensionData, false);
-                return true;
-            }
-
-            if (oldDimensionData.AutoAllowByDate && Duration.between(LocalDateTime.now(), oldDimensionData.GetLeaveDate()).getSeconds() > 0) {
-                CONFIG().LeaveFailAutoAllow.SendToPlayer(player, oldDimensionData, false);
-                return true;
-            }
-
-            if (!oldDimensionData.AllowLeave) {
-                CONFIG().LeaveFail.SendToPlayer(player, oldDimensionData, false);
-                return true;
-            }
-        }
-
-        if (newDimensionData != null) {
-            if (newDimensionData.RequireEnterPermission && Services.PLATFORM.hasPermission(player, newDimensionData.EnterPermission)) {
-                CONFIG().EnterFailPermission.SendToPlayer(player, newDimensionData, true);
-                return true;
-            }
-
-            if (newDimensionData.AutoAllowByDate && Duration.between(LocalDateTime.now(), newDimensionData.GetEnterDate()).getSeconds() > 0) {
-                CONFIG().EnterFailAutoAllow.SendToPlayer(player, newDimensionData, true);
-                return true;
-            }
-
-            if (!newDimensionData.AllowLeave) {
-                CONFIG().EnterFail.SendToPlayer(player, newDimensionData, true);
-                return true;
-            }
-        }
-
         return false;
     }
 
@@ -232,34 +274,41 @@ public class CommonClass {
      * @param player The {@link ServerPlayer} instance to check.
      */
     public static void checkDimension(ServerPlayer player) {
-        DimensionData currentDimension = null;
-        for (var dimensionData : CONFIG().Dimensions) {
-            if (Objects.equals(dimensionData.Key, WorldUtils.GetName(player.level()))) {
-                currentDimension = dimensionData;
-                break;
+        try {
+            DimensionData currentDimension = null;
+            for (var dimensionData : CONFIG().Dimensions) {
+                if (Objects.equals(dimensionData.Key, WorldUtils.GetName(player.level()))) {
+                    currentDimension = dimensionData;
+                    break;
+                }
+            }
+
+            if (currentDimension == null)
+                return;
+
+            if (!currentDimension.KickUnauthorizedPlayers)
+                return;
+
+            if (currentDimension.RequireEnterPermission && Services.PLATFORM.hasPermission(player, currentDimension.EnterPermission)) {
+                CONFIG().EnterFailPermission.SendToPlayer(player, currentDimension, true);
+                kickOutOfDimension(player, currentDimension);
+                return;
+            }
+
+            if (currentDimension.AutoAllowByDate && Duration.between(LocalDateTime.now(), currentDimension.GetEnterDate()).getSeconds() > 0) {
+                CONFIG().EnterFailAutoAllow.SendToPlayer(player, currentDimension, true);
+                kickOutOfDimension(player, currentDimension);
+                return;
+            }
+
+            if (!currentDimension.AllowEnter) {
+                CONFIG().EnterFail.SendToPlayer(player, currentDimension, true);
+                kickOutOfDimension(player, currentDimension);
             }
         }
-        if (currentDimension == null)
-            return;
-
-        if (!currentDimension.KickUnauthorizedPlayers)
-            return;
-
-        if (currentDimension.RequireEnterPermission && Services.PLATFORM.hasPermission(player, currentDimension.EnterPermission)) {
-            CONFIG().EnterFailPermission.SendToPlayer(player, currentDimension, true);
-            kickOutOfDimension(player, currentDimension);
-            return;
-        }
-
-        if (currentDimension.AutoAllowByDate && Duration.between(LocalDateTime.now(), currentDimension.GetEnterDate()).getSeconds() > 0) {
-            CONFIG().EnterFailAutoAllow.SendToPlayer(player, currentDimension, true);
-            kickOutOfDimension(player, currentDimension);
-            return;
-        }
-
-        if (!currentDimension.AllowLeave) {
-            CONFIG().EnterFail.SendToPlayer(player, currentDimension, true);
-            kickOutOfDimension(player, currentDimension);
+        catch (Exception ex) {
+            LOG.error("Error in checkDimension:");
+            LOG.error(ex.getLocalizedMessage());
         }
     }
 
@@ -275,20 +324,26 @@ public class CommonClass {
      * @param currentDimension The {@link DimensionData} representing the current dimension of the player.
      */
     private static void kickOutOfDimension(ServerPlayer player, DimensionData currentDimension) {
-        if (currentDimension.AllowKickToBed && player.getRespawnPosition() != null) {
-            var respawnLoc = player.getRespawnPosition();
-            var targetLevel = player.server.getLevel(player.getRespawnDimension());
-            if (targetLevel != null) {
-                player.teleportTo(targetLevel, respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ(), player.getRespawnAngle(), 0f);
-                return;
+        try {
+            if (currentDimension.AllowKickToBed && player.getRespawnPosition() != null) {
+                var respawnLoc = player.getRespawnPosition();
+                var targetLevel = player.server.getLevel(player.getRespawnDimension());
+                if (targetLevel != null) {
+                    player.teleportTo(targetLevel, respawnLoc.getX(), respawnLoc.getY(), respawnLoc.getZ(), player.getRespawnAngle(), 0f);
+                    return;
+                }
             }
+
+            ServerLevel targetLevel = WorldUtils.GetLevelByName(player.server, currentDimension.KickTargetDimension);
+            if (targetLevel == null)
+                return;
+
+            var spawnLoc = targetLevel.getSharedSpawnPos();
+            player.teleportTo(targetLevel, spawnLoc.getX(), spawnLoc.getY(), spawnLoc.getZ(), 0f, 0f);
         }
-
-        ServerLevel targetLevel = WorldUtils.GetLevelByName(player.server, currentDimension.KickTargetDimension);
-        if (targetLevel == null)
-            return;
-
-        var spawnLoc = targetLevel.getSharedSpawnPos();
-        player.teleportTo(targetLevel, spawnLoc.getX(), spawnLoc.getY(), spawnLoc.getZ(), 0f, 0f);
+        catch (Exception ex) {
+            LOG.error("Error in kickOutOfDimension:");
+            LOG.error(ex.getLocalizedMessage());
+        }
     }
 }
