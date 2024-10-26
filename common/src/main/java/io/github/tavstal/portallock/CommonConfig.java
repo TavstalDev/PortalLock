@@ -22,46 +22,46 @@ import java.util.function.Supplier;
  */
 public class CommonConfig {
 
-    @ConfigField(order = 1, comment = "Shows more logs than usual. Helps locating errors.")
+    @ConfigField(comment = "Shows more logs than usual. Helps locating errors.")
     public boolean EnableDebugMode;
 
-    @ConfigField(order = 2, comment = "List of the dimensions.\nAuto populated during first start.")
+    @ConfigField(comment = "List of the dimensions.\nAuto populated during first start.")
     public List<DimensionData> Dimensions;
 
-    @ConfigField(order = 3, comment = "The message shown to players on successful entry.")
+    @ConfigField(comment = "The message shown to players on successful entry.")
     public Message EnterSuccess;
 
-    @ConfigField(order = 4, comment = "The message shown to players when entry fails.")
+    @ConfigField(comment = "The message shown to players when entry fails.")
     public Message EnterFail;
 
-    @ConfigField(order = 5, comment = "Message displayed when the player fails to enter due to missing permission.")
+    @ConfigField(comment = "Message displayed when the player fails to enter due to missing permission.")
     public Message EnterFailPermission;
 
-    @ConfigField(order = 6, comment = "Message displayed when the player fails to enter, but it will be auto unlocked.")
+    @ConfigField(comment = "Message displayed when the player fails to enter, but it will be auto unlocked.")
     public Message EnterFailAutoAllow;
 
-    @ConfigField(order = 7, comment = "The message shown to players on successful exit.")
+    @ConfigField(comment = "The message shown to players on successful exit.")
     public Message LeaveSuccess;
 
-    @ConfigField(order = 8, comment = "The message shown to players when exit fails.")
+    @ConfigField(comment = "The message shown to players when exit fails.")
     public Message LeaveFail;
 
-    @ConfigField(order = 9, comment = "Message displayed when the player fails to leave due to missing permission.")
+    @ConfigField(comment = "Message displayed when the player fails to leave due to missing permission.")
     public Message LeaveFailPermission;
 
-    @ConfigField(order = 10, comment = "Message displayed when the player fails to leave, but it will be auto unlocked.")
+    @ConfigField(comment = "Message displayed when the player fails to leave, but it will be auto unlocked.")
     public Message LeaveFailAutoAllow;
 
-    @ConfigField(order = 11, comment = "The sound event triggered on successful entry.")
+    @ConfigField(comment = "The sound event triggered on successful entry.")
     public String SuccessSound;
 
-    @ConfigField(order = 12, comment = "The sound event triggered on failed entry.")
+    @ConfigField(comment = "The sound event triggered on failed entry.")
     public String FailEnterSound;
 
-    @ConfigField(order = 13, comment = "The sound event triggered on failed exit.")
+    @ConfigField(comment = "The sound event triggered on failed exit.")
     public String FailLeaveSound;
 
-    @ConfigField(order = 100, comment = "DO NOT TOUCH THIS. This helps handlig config related changes after updates.")
+    @ConfigField(comment = "DO NOT TOUCH THIS. This helps handlig config related changes after updates.")
     public int FileVersion;
 
     public CommonConfig() {

@@ -1,49 +1,51 @@
 package io.github.tavstal.portallock.models;
 
+import io.github.tavstal.portallock.CommonClass;
+
 import java.time.LocalDateTime;
 
 public class DimensionData {
 
-    @ConfigField(order = 1, comment = "Key of the dimension, example: minecraft:overworld")
+    @ConfigField(comment = "Key of the dimension, example: minecraft:overworld")
     public String Key;
 
-    @ConfigField(order = 2, comment = "Name of the dimension, example: overworld")
+    @ConfigField(comment = "Name of the dimension, example: overworld")
     public String DisplayName;
 
-    @ConfigField(order = 3, comment = "Automatically allow players based on the specified dates for entering and leaving.")
+    @ConfigField(comment = "Automatically allow players based on the specified dates for entering and leaving.")
     public boolean AutoAllowByDate;
 
-    @ConfigField(order = 4, comment = "The date when players will be allowed to enter. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 30 minutes.")
+    @ConfigField(comment = "The date when players will be allowed to enter. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 30 minutes.")
     public String DateToAllowEnter;
 
-    @ConfigField(order = 5, comment = "The date when players will be allowed to leave. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 30 minutes.")
+    @ConfigField(comment = "The date when players will be allowed to leave. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 30 minutes.")
     public String DateToAllowLeave;
 
-    @ConfigField(order = 6, comment = "Whether unauthorized players should be kicked from the dimension.")
+    @ConfigField(comment = "Whether unauthorized players should be kicked from the dimension.")
     public boolean KickUnauthorizedPlayers;
 
-    @ConfigField(order = 7, comment = "Allow players to be kicked to their bed spawn if unauthorized.")
+    @ConfigField(comment = "Allow players to be kicked to their bed spawn if unauthorized.")
     public boolean AllowKickToBed;
 
-    @ConfigField(order = 8, comment = "The dimension to send unauthorized players to if kicked.")
+    @ConfigField(comment = "The dimension to send unauthorized players to if kicked.")
     public String KickTargetDimension;
 
-    @ConfigField(order = 9, comment = "Whether players are allowed to enter the dimension.")
+    @ConfigField(comment = "Whether players are allowed to enter the dimension.")
     public boolean AllowEnter;
 
-    @ConfigField(order = 10, comment = "Require players to have a specific permission to enter the dimension.\nNote: At the moment permissions are only supported by the plugin version.")
+    @ConfigField(comment = "Require players to have a specific permission to enter the dimension.\nNote: At the moment permissions are only supported by the plugin version.")
     public boolean RequireEnterPermission;
 
-    @ConfigField(order = 11, comment = "The permission needed for players to enter.")
+    @ConfigField(comment = "The permission needed for players to enter.")
     public String EnterPermission;
 
-    @ConfigField(order = 12, comment = "Whether players are allowed to leave the dimension.")
+    @ConfigField(comment = "Whether players are allowed to leave the dimension.")
     public boolean AllowLeave;
 
-    @ConfigField(order = 13, comment = "Require players to have a specific permission to leave.\nNote: At the moment permissions are only supported by the plugin version.")
+    @ConfigField(comment = "Require players to have a specific permission to leave.\nNote: At the moment permissions are only supported by the plugin version.")
     public boolean RequireLeavePermission;
 
-    @ConfigField(order = 14, comment = "The permission needed for players to leave.")
+    @ConfigField(comment = "The permission needed for players to leave.")
     public String LeavePermission;
 
     public DimensionData() {}
@@ -65,11 +67,21 @@ public class DimensionData {
         LeavePermission = leavePermission;
     }
 
+    /**
+     * Parses and returns the date and time when entry is allowed.
+     *
+     * @return A {@link LocalDateTime} representing the date and time of allowed entry.
+     */
     public LocalDateTime GetEnterDate() {
-        return LocalDateTime.parse(DateToAllowEnter);
+        return LocalDateTime.parse(DateToAllowEnter, CommonClass.DateFormatter);
     }
 
+    /**
+     * Parses and returns the date and time when exit is allowed.
+     *
+     * @return A {@link LocalDateTime} representing the date and time of allowed exit.
+     */
     public LocalDateTime GetLeaveDate() {
-        return LocalDateTime.parse(DateToAllowLeave);
+        return LocalDateTime.parse(DateToAllowLeave, CommonClass.DateFormatter);
     }
 }
