@@ -1,5 +1,6 @@
 package io.github.tavstal.portallock;
 
+import io.github.tavstal.portallock.commands.PortalLockCommand;
 import io.github.tavstal.portallock.models.DimensionData;
 import io.github.tavstal.portallock.models.ESoundType;
 import io.github.tavstal.portallock.platform.Services;
@@ -122,9 +123,8 @@ public class CommonClass {
                 ConfigUtils.saveConfig(_config);
             }
 
-            // TODO: Commands
-            //var commandDispatcher = server.getCommands().getDispatcher();
-            //RespawnCommand.register(commandDispatcher);
+            var commandDispatcher = server.getCommands().getDispatcher();
+            PortalLockCommand.register(commandDispatcher);
 
             LOG.info(MOD_NAME + " has been loaded.");
         }
