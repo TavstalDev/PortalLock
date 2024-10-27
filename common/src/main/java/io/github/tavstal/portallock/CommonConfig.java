@@ -67,6 +67,7 @@ public class CommonConfig {
     public String TimeHoursFormat;
     public String TimeMinutesFormat;
     public String TimeSecondsFormat;
+    public String CommandSyntaxFormat;
 
     @ConfigField(comment = "DO NOT TOUCH THIS. This helps handlig config related changes after updates.")
     public int FileVersion;
@@ -157,6 +158,7 @@ public class CommonConfig {
         TimeHoursFormat = "§e{0} §ahour(s)";
         TimeMinutesFormat = "§e{0} §aminute(s)";
         TimeSecondsFormat = "§e{0} §asecond(s)";
+        CommandSyntaxFormat = "§cWrong syntax! §aUsage: /{0} {1}";
 
         FileVersion = 1;
     }
