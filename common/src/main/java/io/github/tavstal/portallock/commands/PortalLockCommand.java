@@ -2,18 +2,21 @@ package io.github.tavstal.portallock.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.tavstal.portallock.CommonClass;
 import io.github.tavstal.portallock.utils.ModUtils;
+import io.github.tavstal.portallock.utils.WorldUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.server.MinecraftServer;
 
 import java.text.MessageFormat;
+import java.util.concurrent.CompletableFuture;
 
 public class PortalLockCommand {
 
@@ -30,12 +33,14 @@ public class PortalLockCommand {
                         .requires(source -> source.hasPermission(PermissionLevel)) // Check permission
                         //#region Add subcommand
                         .then(Commands.literal("add").then(Commands.argument("worldKey", StringArgumentType.word())
+                                .suggests(PortalLockCommand::suggestWorldKeys)
                                 .executes(PortalLockCommand::executeAdd) // Executes if the arg is present
                             ).executes(PortalLockCommand::executeAddSyntax) // Executes if the arg is not present
                         )
                         //#endregion
                         //#region Edit subcommand
                         .then(Commands.literal("edit").then(Commands.argument("worldKey", StringArgumentType.word())
+                                .suggests(PortalLockCommand::suggestWorldKeys)
                                 .then(Commands.argument("variable", StringArgumentType.word())
                                         .then(Commands.argument("newValue", StringArgumentType.word())
                                                 .executes(PortalLockCommand::executeEdit)
@@ -46,6 +51,7 @@ public class PortalLockCommand {
                         //#endregion
                         //#region Remove subcommand
                         .then(Commands.literal("remove").then(Commands.argument("worldKey", StringArgumentType.word())
+                                        .suggests(PortalLockCommand::suggestWorldKeys)
                                         .executes(PortalLockCommand::executeRemove)
                                 ).executes(PortalLockCommand::executeRemoveSyntax)
                         )
@@ -58,6 +64,7 @@ public class PortalLockCommand {
                         //#endregion
                         //#region Info subcommand
                         .then(Commands.literal("info").then(Commands.argument("worldKey", StringArgumentType.word())
+                                        .suggests(PortalLockCommand::suggestWorldKeys)
                                         .executes(PortalLockCommand::executeInfo)
                                 ).executes(PortalLockCommand::executeInfoSyntax)
                         )
@@ -133,33 +140,45 @@ public class PortalLockCommand {
 
     //#region Subcommands
     private static int executeAdd(CommandContext<CommandSourceStack> command){
-        //StringArgumentType.getString(command, "password")
 
         return Command.SINGLE_SUCCESS;
     }
 
     private static int executeEdit(CommandContext<CommandSourceStack> command){
-        //StringArgumentType.getString(command, "password")
 
         return Command.SINGLE_SUCCESS;
     }
 
     private static int executeRemove(CommandContext<CommandSourceStack> command){
-        //StringArgumentType.getString(command, "password")
 
         return Command.SINGLE_SUCCESS;
     }
 
     private static int executeList(CommandContext<CommandSourceStack> command){
-        //StringArgumentType.getString(command, "password")
+        int page = IntegerArgumentType.getInteger(command, "page");
 
         return Command.SINGLE_SUCCESS;
     }
 
     private static int executeInfo(CommandContext<CommandSourceStack> command){
-        //StringArgumentType.getString(command, "password")
 
         return Command.SINGLE_SUCCESS;
+    }
+    //#endregion
+
+    //#region Suggests
+    public static CompletableFuture<Suggestions> suggestWorldKeys(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        // Example list of world keys to suggest
+        MinecraftServer server = context.getSource().getServer();
+
+        for (var world : server.getAllLevels()) {
+            String name = WorldUtils.GetName(world);
+            if (name.startsWith(builder.getRemaining())) {
+                builder.suggest(name);
+            }
+        }
+
+        return builder.buildFuture();
     }
     //#endregion
 }
