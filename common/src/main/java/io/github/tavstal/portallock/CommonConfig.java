@@ -24,6 +24,9 @@ public class CommonConfig {
     @ConfigField(comment = "Shows more logs than usual. Helps locating errors.")
     public boolean EnableDebugMode;
 
+    @ConfigField(comment = "Specifies the language used by the application.")
+    public String Language;
+
     @ConfigField(comment = "How often should the server check the auto allow dates in minutes.")
     public int UpdateInterval;
 
@@ -63,17 +66,12 @@ public class CommonConfig {
     @ConfigField(comment = "The sound event triggered on failed exit.")
     public String FailLeaveSound;
 
-    public String TimeDaysFormat;
-    public String TimeHoursFormat;
-    public String TimeMinutesFormat;
-    public String TimeSecondsFormat;
-    public String CommandSyntaxFormat;
-
     @ConfigField(comment = "DO NOT TOUCH THIS. This helps handlig config related changes after updates.")
     public int FileVersion;
 
     public CommonConfig() {
         EnableDebugMode = false;
+        Language = "en";
         UpdateInterval = 15;
         Dimensions = new ArrayList<>();
         EnterSuccess =  new Message(
@@ -153,12 +151,6 @@ public class CommonConfig {
         SuccessSound =  SoundEvents.PLAYER_LEVELUP.getLocation().toString();
         FailEnterSound =  SoundEvents.VILLAGER_NO.getLocation().toString();
         FailLeaveSound =  SoundEvents.VILLAGER_NO.getLocation().toString();
-
-        TimeDaysFormat = "§e{0} §aday(s)";
-        TimeHoursFormat = "§e{0} §ahour(s)";
-        TimeMinutesFormat = "§e{0} §aminute(s)";
-        TimeSecondsFormat = "§e{0} §asecond(s)";
-        CommandSyntaxFormat = "§cWrong syntax! §aUsage: /{0} {1}";
 
         FileVersion = 1;
     }

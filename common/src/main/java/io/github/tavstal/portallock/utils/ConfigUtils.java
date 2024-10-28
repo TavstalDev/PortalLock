@@ -2,8 +2,10 @@ package io.github.tavstal.portallock.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import io.github.tavstal.portallock.CommonClass;
 import io.github.tavstal.portallock.CommonConfig;
+import io.github.tavstal.portallock.Translations;
 import io.github.tavstal.portallock.models.ConfigField;
 
 import java.io.File;
@@ -13,8 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Utility class for handling configuration-related operations.
@@ -29,10 +30,26 @@ import java.util.List;
  */
 public class ConfigUtils {
     private static final String minecraftRootPath = System.getProperty("user.dir");
-    private static final Path configFilePath = CommonClass.IsPlugin() ? Paths.get(minecraftRootPath, "plugins", CommonClass.MOD_NAME, CommonClass.MOD_ID + ".jsonc") : Paths.get(minecraftRootPath, "config", CommonClass.MOD_ID + ".jsonc");
+    private static final Path configFilePath = CommonClass.IsPlugin() ?
+            Paths.get(minecraftRootPath, "plugins", CommonClass.MOD_NAME, CommonClass.MOD_ID + "-config.jsonc")
+            :
+            Paths.get(minecraftRootPath, "config", CommonClass.MOD_NAME, CommonClass.MOD_ID + "-config.jsonc");
+    private static final Path translationsFilePath = CommonClass.IsPlugin() ?
+            Paths.get(minecraftRootPath, "plugins", CommonClass.MOD_NAME, "translations", getLangKey() + ".json")
+            :
+            Paths.get(minecraftRootPath, "config", CommonClass.MOD_NAME, "translations", getLangKey() + ".json");
+
     private static final Gson gson = new GsonBuilder()
             .setPrettyPrinting() // Enables pretty printing
             .create();
+
+    private static String getLangKey() {
+        String lang = "en";
+        if (!CommonClass.CONFIG().Language.isEmpty()) {
+            lang = CommonClass.CONFIG().Language;
+        }
+        return  lang;
+    }
 
     /**
      * Loads the configuration settings from a predefined configuration file.
@@ -80,6 +97,42 @@ public class ConfigUtils {
     }
 
     /**
+     * Loads translations from a JSON file into a map.
+     *
+     * @return a map containing translations, with each key-value pair from the file
+     */
+    public static Map<String, String> loadTranslations() {
+        Map<String, String> result = Translations.GetDefaultTranslations();
+
+        try {
+            // Load Defaults
+            var translationsFile = translationsFilePath.toFile();
+            if (!translationsFile.exists()) {
+                try {
+                    File parentDir = translationsFile.getParentFile();
+                    if (!parentDir.exists()) {
+                        boolean mkdirs = parentDir.mkdirs();
+                    }
+
+                    saveTranslations(result);  // Save the new config file with default values
+                    return result;
+                } catch (Exception e) {
+                    CommonClass.LOG.error("Failed to load default translations.");
+                    CommonClass.LOG.error(e.getLocalizedMessage());
+                    return result;
+                }
+            }
+
+            result = gson.fromJson(Files.readString(configFilePath), new TypeToken<Map<String, String>>(){}.getType());
+        } catch (Exception ex) {
+            CommonClass.LOG.error("Error in loadTranslations()");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+        }
+
+        return result;
+    }
+
+    /**
      * Saves the given configuration settings to a configuration file.
      *
      * <p>This method serializes the provided {@link CommonConfig} object
@@ -97,6 +150,20 @@ public class ConfigUtils {
             writer.write(serializeJSONC(config, 1, true));
         } catch (Exception ex) {
             CommonClass.LOG.error("Error in saveConfig()");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Saves the given translations map to a JSON file.
+     *
+     * @param translations the map of translations to save
+     */
+    public static void saveTranslations(Map<String, String> translations) {
+        try (FileWriter writer = new FileWriter(translationsFilePath.toFile())) {
+            writer.write(serialize(translations));
+        } catch (Exception ex) {
+            CommonClass.LOG.error("Error in saveTranslations()");
             CommonClass.LOG.error(ex.getLocalizedMessage());
         }
     }
@@ -204,11 +271,11 @@ public class ConfigUtils {
 
     /**
      * Deserializes a list of JSONC lines into an object of the specified type.
-     *
+     * <p>
      * This method removes comments from the provided JSONC lines and then converts the
      * resulting JSON string into an object of type {@code T}. The comments can be
      * single-line (//) or multi-line (/* ... /*).
-     *
+     * </p>
      * @param jsoncLines the list of strings representing JSONC lines, which may include comments
      * @param clazz the class of type {@code T} to which the JSON should be deserialized
      * @param <T> the type of the object to be deserialized

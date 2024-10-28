@@ -102,6 +102,9 @@ public class CommonClass {
                 SetLogLevel("DEBUG");
             }
 
+            // Initialize Translations
+            Translations.init();
+
             // Populate dimensions
             if (CONFIG().Dimensions == null || CONFIG().Dimensions.isEmpty()) {
                 List<DimensionData> dimensions = new ArrayList<>();

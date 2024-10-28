@@ -9,11 +9,14 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.tavstal.portallock.CommonClass;
+import io.github.tavstal.portallock.Translations;
+import io.github.tavstal.portallock.models.DimensionData;
 import io.github.tavstal.portallock.utils.ModUtils;
 import io.github.tavstal.portallock.utils.WorldUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
 
 import java.text.MessageFormat;
 import java.util.concurrent.CompletableFuture;
@@ -83,7 +86,7 @@ public class PortalLockCommand {
         if (entity == null)
             return 0;
 
-        entity.sendSystemMessage(ModUtils.Literal(MessageFormat.format(CommonClass.CONFIG().CommandSyntaxFormat, Name, Syntax)));
+        entity.sendSystemMessage(Translations.GetTranslationComp("command_syntax", Name, Syntax));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -92,8 +95,8 @@ public class PortalLockCommand {
         if (entity == null)
             return 0;
 
-        entity.sendSystemMessage(ModUtils.Literal(MessageFormat.format(CommonClass.CONFIG().CommandSyntaxFormat, Name,
-                "add [worldKey]")));
+        entity.sendSystemMessage(Translations.GetTranslationComp("command_syntax", Name,
+                "add [worldKey]"));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -102,8 +105,8 @@ public class PortalLockCommand {
         if (entity == null)
             return 0;
 
-        entity.sendSystemMessage(ModUtils.Literal(MessageFormat.format(CommonClass.CONFIG().CommandSyntaxFormat, Name,
-                "edit [worldKey] [variable] [newValue]")));
+        entity.sendSystemMessage(Translations.GetTranslationComp("command_syntax", Name,
+                "edit [worldKey] [variable] [newValue]"));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -112,8 +115,8 @@ public class PortalLockCommand {
         if (entity == null)
             return 0;
 
-        entity.sendSystemMessage(ModUtils.Literal(MessageFormat.format(CommonClass.CONFIG().CommandSyntaxFormat, Name,
-                "remove [worldKey]")));
+        entity.sendSystemMessage(Translations.GetTranslationComp("command_syntax", Name,
+                "remove [worldKey]"));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -122,8 +125,8 @@ public class PortalLockCommand {
         if (entity == null)
             return 0;
 
-        entity.sendSystemMessage(ModUtils.Literal(MessageFormat.format(CommonClass.CONFIG().CommandSyntaxFormat, Name,
-                "list <page>")));
+        entity.sendSystemMessage(Translations.GetTranslationComp("command_syntax", Name,
+                "list <page>"));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -132,37 +135,94 @@ public class PortalLockCommand {
         if (entity == null)
             return 0;
 
-        entity.sendSystemMessage(ModUtils.Literal(MessageFormat.format(CommonClass.CONFIG().CommandSyntaxFormat, Name,
-                "info [worldKey]")));
+        entity.sendSystemMessage(Translations.GetTranslationComp("command_syntax", Name,
+                "info [worldKey]"));
         return Command.SINGLE_SUCCESS;
     }
     //#endregion
 
     //#region Subcommands
     private static int executeAdd(CommandContext<CommandSourceStack> command){
+        try {
+            Entity entity = command.getSource().getEntity();
+            if (entity == null)
+                return 0;
 
-        return Command.SINGLE_SUCCESS;
+            String worldKey = StringArgumentType.getString(command, "worldKey");
+            DimensionData dimensionData = null;
+            for (var dimension : CommonClass.CONFIG().Dimensions) {
+                if (dimension.Key.equalsIgnoreCase(worldKey)) {
+                    dimensionData = dimension;
+                    break;
+                }
+            }
+
+            if (dimensionData != null) {
+                entity.sendSystemMessage(Translations.GetTranslationComp("error_dimension_already_exist", worldKey));
+                return 0;
+            }
+
+
+            return Command.SINGLE_SUCCESS;
+        }
+        catch (Exception ex) {
+            CommonClass.LOG.error("Error in PortalLock command, executeAdd:");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+            return 0;
+        }
     }
 
     private static int executeEdit(CommandContext<CommandSourceStack> command){
+        String worldKey = StringArgumentType.getString(command, "worldKey");
 
-        return Command.SINGLE_SUCCESS;
+        try {
+
+
+            return Command.SINGLE_SUCCESS;
+        }
+        catch (Exception ex) {
+            CommonClass.LOG.error("Error in PortalLock command, executeEdit:");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+            return 0;
+        }
     }
 
     private static int executeRemove(CommandContext<CommandSourceStack> command){
+        String worldKey = StringArgumentType.getString(command, "worldKey");
 
-        return Command.SINGLE_SUCCESS;
+        try {
+            return Command.SINGLE_SUCCESS;
+        }
+        catch (Exception ex) {
+            CommonClass.LOG.error("Error in PortalLock command, executeRemove:");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+            return 0;
+        }
     }
 
     private static int executeList(CommandContext<CommandSourceStack> command){
         int page = IntegerArgumentType.getInteger(command, "page");
-
-        return Command.SINGLE_SUCCESS;
+        try {
+            return Command.SINGLE_SUCCESS;
+        }
+        catch (Exception ex) {
+            CommonClass.LOG.error("Error in PortalLock command, executeList:");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+            return 0;
+        }
     }
 
     private static int executeInfo(CommandContext<CommandSourceStack> command){
+        String worldKey = StringArgumentType.getString(command, "worldKey");
 
-        return Command.SINGLE_SUCCESS;
+        try {
+            return Command.SINGLE_SUCCESS;
+        }
+        catch (Exception ex) {
+            CommonClass.LOG.error("Error in PortalLock command, executeInfo:");
+            CommonClass.LOG.error(ex.getLocalizedMessage());
+            return 0;
+        }
     }
     //#endregion
 

@@ -1,6 +1,7 @@
 package io.github.tavstal.portallock.models;
 
 import io.github.tavstal.portallock.CommonClass;
+import io.github.tavstal.portallock.Translations;
 import io.github.tavstal.portallock.utils.ModUtils;
 import io.github.tavstal.portallock.utils.PlayerUtils;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,13 +51,13 @@ public class Message {
         int seconds = duration.toSecondsPart();
 
         if (days > 0)
-            remainingTime += MessageFormat.format(CommonClass.CONFIG().TimeDaysFormat + " ", days);
+            remainingTime += Translations.GetTranslation("time_days", days);
         if (hours > 0)
-            remainingTime += MessageFormat.format(CommonClass.CONFIG().TimeHoursFormat + " ", hours);
+            remainingTime += Translations.GetTranslation("time_hours", hours);
         if (minutes > 0)
-            remainingTime += MessageFormat.format(CommonClass.CONFIG().TimeMinutesFormat + " ", minutes);
+            remainingTime += Translations.GetTranslation("time_minutes", minutes);
         if (seconds > 0)
-            remainingTime += MessageFormat.format(CommonClass.CONFIG().TimeSecondsFormat + " ", seconds);
+            remainingTime += Translations.GetTranslation("time_seconds", seconds);
 
         if (Chat.Enable) {
             player.sendSystemMessage(ModUtils.Literal(Chat.Message.replaceAll("%display_name%", displayName).replaceAll("%time_left_to_unlock%", remainingTime)));
