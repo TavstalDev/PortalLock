@@ -82,6 +82,10 @@ public class CommonClass {
         return _config;
     }
 
+    public static void UpdateConfig(CommonConfig newValue) {
+        _config = newValue;
+    }
+
     /**
      * Initializes the mod or plugin with the given server instance and mode.
      * <p>
