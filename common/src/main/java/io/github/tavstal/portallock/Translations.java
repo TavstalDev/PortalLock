@@ -101,7 +101,11 @@ public class Translations {
             var result = ConfigUtils.getJsonValue(_translations, key);
             if (result == null)
                 return null;
-            return result.toString();
+            String str = result.toString();
+            if (str.length() >= 2 && str.startsWith("\"") && str.endsWith("\"")) {
+                return str.substring(1, str.length() - 1);
+            }
+            return str;
         } catch (Exception ex) {
             CommonClass.LOG.error("Error in GGetLocale:");
             CommonClass.LOG.error(ex.getLocalizedMessage());
@@ -121,7 +125,11 @@ public class Translations {
             var result = ConfigUtils.getJsonValue(_translations, key);
             if (result == null)
                 return null;
-            return MessageFormat.format(result.toString(), args);
+            String str = result.toString();
+            if (str.length() >= 2 && str.startsWith("\"") && str.endsWith("\"")) {
+               str = str.substring(1, str.length() - 1);
+            }
+            return MessageFormat.format(str, args);
         } catch (Exception ex) {
             CommonClass.LOG.error("Error in GetLocale (args):");
             CommonClass.LOG.error(ex.getLocalizedMessage());
@@ -137,10 +145,7 @@ public class Translations {
      */
     public static String GetLocalePrefix(String key) {
         try {
-            var result = ConfigUtils.getJsonValue(_translations, key);
-            if (result == null)
-                return null;
-            return GetLocale("general.prefix") + result.toString();
+            return GetLocale("general.prefix") + GetLocale(key);
         } catch (Exception ex) {
             CommonClass.LOG.error("Error in GetLocalePrefix:");
             CommonClass.LOG.error(ex.getLocalizedMessage());
@@ -157,10 +162,7 @@ public class Translations {
      */
     public static String GetLocalePrefix(String key, Object... args) {
         try {
-            var result = ConfigUtils.getJsonValue(_translations, key);
-            if (result == null)
-                return null;
-            return GetLocale("general.prefix") + MessageFormat.format(result.toString(), args);
+            return GetLocale("general.prefix") + GetLocale(key, args);
         } catch (Exception ex) {
             CommonClass.LOG.error("Error in GetLocalePrefix (args):");
             CommonClass.LOG.error(ex.getLocalizedMessage());
