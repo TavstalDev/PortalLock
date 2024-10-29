@@ -1,0 +1,56 @@
+{
+  "general": {
+    "prefix": "§8[§bPortal§3Lock§8]§r ",
+    "noPermission": "§cYou do not have permission to do that.",
+    "dimensionNotFound": "§cFailed to get the §e{0}§c dimension."
+  },
+  "commands": {
+    "syntax": "§cWrong syntax! §aUsage: /{0} {1}",
+    "add": {
+      "alreadyExist": "§cThe §e{0} §cdimension already exists.",
+      "success": "§aYou have successfully added the §e{0}§a dimension."
+    },
+    "edit": {
+      "success": "§aYou have successfully modified the dimension."
+    },
+    "remove": {
+      "success": "§aYou have successfully removed the §e{0}§a dimension."
+    },
+    "list": {
+      "title": "§e========== §aDimensions §e==========",
+      "line": "§7» §e{0} §7- {1} {2}",
+      "addBtn": "§8[§aAdd§8]",
+      "infoBtn": "§8[§aInfo§8]",
+      "removeBtn": "§8[§cRemove§8]",
+      "bottom": "§e====== {0}{1}/{2}{3} §e======",
+      "pagePrev": "§a<<< ",
+      "pageNext": " §a>>>"
+    },
+    "info": {
+      "title": "§e====== §aDimension §e====== §c{0} §e======",
+      "line": "§7» §e{0} §7- {1} {2}",
+      "bottom": "§e========== {0}{1}/{2}{3} §e==========",
+      "pagePrev": "§a<<< ",
+      "pageNext": " §a>>>",
+      "active": "§6{0}",
+      "inactive": "§8{0}",
+      "actionAllow": "Allow",
+      "actionDeny": "Deny",
+      "actionWorld": "World",
+      "actionCustom": "Custom Text"
+    },
+    "events": {
+      "add": "§6Click to add.",
+      "set": "§6Click to set.",
+      "remove": "§6Click to remove",
+      "view": "§6Click to view.",
+      "navigate": "§6Click to navigate."
+    }
+  },
+  "time": {
+    "days": "§e{0} §aday(s)",
+    "hours": "§e{0} §ahours()",
+    "minutes": "§e{0} §aminute(s)",
+    "seconds": "§e{0} §asecond(s)"
+  }
+}
