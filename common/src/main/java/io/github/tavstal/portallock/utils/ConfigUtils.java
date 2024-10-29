@@ -2,6 +2,7 @@ package io.github.tavstal.portallock.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.github.tavstal.portallock.CommonClass;
 import io.github.tavstal.portallock.CommonConfig;
@@ -34,10 +35,6 @@ public class ConfigUtils {
             Paths.get(minecraftRootPath, "plugins", CommonClass.MOD_NAME, CommonClass.MOD_ID + "-config.jsonc")
             :
             Paths.get(minecraftRootPath, "config", CommonClass.MOD_NAME, CommonClass.MOD_ID + "-config.jsonc");
-    private static final Path translationsFilePath = CommonClass.IsPlugin() ?
-            Paths.get(minecraftRootPath, "plugins", CommonClass.MOD_NAME, "translations", getLangKey() + ".json")
-            :
-            Paths.get(minecraftRootPath, "config", CommonClass.MOD_NAME, "translations", getLangKey() + ".json");
 
     private static final Gson gson = new GsonBuilder()
             .setPrettyPrinting() // Enables pretty printing
@@ -97,42 +94,6 @@ public class ConfigUtils {
     }
 
     /**
-     * Loads translations from a JSON file into a map.
-     *
-     * @return a map containing translations, with each key-value pair from the file
-     */
-    public static Map<String, String> loadTranslations() {
-        Map<String, String> result = Translations.GetDefaultTranslations();
-
-        try {
-            // Load Defaults
-            var translationsFile = translationsFilePath.toFile();
-            if (!translationsFile.exists()) {
-                try {
-                    File parentDir = translationsFile.getParentFile();
-                    if (!parentDir.exists()) {
-                        boolean mkdirs = parentDir.mkdirs();
-                    }
-
-                    saveTranslations(result);  // Save the new config file with default values
-                    return result;
-                } catch (Exception e) {
-                    CommonClass.LOG.error("Failed to load default translations.");
-                    CommonClass.LOG.error(e.getLocalizedMessage());
-                    return result;
-                }
-            }
-
-            result = gson.fromJson(Files.readString(configFilePath), new TypeToken<Map<String, String>>(){}.getType());
-        } catch (Exception ex) {
-            CommonClass.LOG.error("Error in loadTranslations()");
-            CommonClass.LOG.error(ex.getLocalizedMessage());
-        }
-
-        return result;
-    }
-
-    /**
      * Saves the given configuration settings to a configuration file.
      *
      * <p>This method serializes the provided {@link CommonConfig} object
@@ -150,20 +111,6 @@ public class ConfigUtils {
             writer.write(serializeJSONC(config, 1, true));
         } catch (Exception ex) {
             CommonClass.LOG.error("Error in saveConfig()");
-            CommonClass.LOG.error(ex.getLocalizedMessage());
-        }
-    }
-
-    /**
-     * Saves the given translations map to a JSON file.
-     *
-     * @param translations the map of translations to save
-     */
-    public static void saveTranslations(Map<String, String> translations) {
-        try (FileWriter writer = new FileWriter(translationsFilePath.toFile())) {
-            writer.write(serialize(translations));
-        } catch (Exception ex) {
-            CommonClass.LOG.error("Error in saveTranslations()");
             CommonClass.LOG.error(ex.getLocalizedMessage());
         }
     }
@@ -327,5 +274,39 @@ public class ConfigUtils {
      */
     private static String serialize(Object obj) {
         return gson.toJson(obj);
+    }
+
+    /**
+     * Retrieves a value from a nested {@link JsonObject} structure based on a dot-separated path.
+     * <p>
+     * The path format is a dot-separated string representing the keys at each level of nesting.
+     * For example, given a JSON object like <code>{"time": {"days": {"hours": 5.5}}}</code>, the path
+     * <code>"time.days.hours"</code> will return the value <code>5.5</code>.
+     * </p>
+     * <p>
+     * This method returns {@code null} if any key in the path does not exist or if the path leads to
+     * a non-JSONObject type before reaching the end.
+     * </p>
+     *
+     * @param jsonObject the {@link JsonObject} to search within
+     * @param path the dot-separated path to the desired value
+     * @return the value at the specified path, or {@code null} if the path is invalid or not found
+     */
+    public static Object getJsonValue(JsonObject jsonObject, String path) {
+        String[] keys = path.split("\\.");
+        Object current = jsonObject;
+
+        for (String key : keys) {
+            if (current instanceof JsonObject currenJsonObject) {
+                current = currenJsonObject.get(key);
+            } else {
+                return null; // Return null if path does not exist or type is not JSONObject
+            }
+
+            if (current == null) {
+                return null; // Return null if the key doesn't exist
+            }
+        }
+        return current;
     }
 }
