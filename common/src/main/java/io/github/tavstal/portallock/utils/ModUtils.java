@@ -2,13 +2,15 @@ package io.github.tavstal.portallock.utils;
 
 import com.mojang.brigadier.LiteralMessage;
 import io.github.tavstal.portallock.CommonClass;
-import net.minecraft.network.chat.Component;
+import io.github.tavstal.portallock.models.InteractableChatComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.scores.Scoreboard;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 /**
  * Utility class for managing operations related to Minecraft mods.
@@ -218,5 +220,43 @@ public class ModUtils {
             CommonClass.LOG.error(e.getLocalizedMessage());
             return null;  // Or handle in a version-specific way
         }
+    }
+
+    /**
+     * Creates a clickable component from a template string and arguments.
+     *
+     * @param template The template string with placeholders (e.g., "This is {0} clickable {1}.")
+     * @return A Component with clickable parts.
+     */
+    public static Component createClickableComponent(String template, List<InteractableChatComponent> interactable) {
+        if (template == null)
+        {
+            return Component.literal("§4ERROR");
+        }
+
+        String[] parts = template.split("\\{\\d+\\}"); // Split the template by placeholders
+        MutableComponent component = Component.literal(""); // Start with an empty component
+
+        for (int i = 0; i < parts.length; i++) {
+            component.append(Component.literal(parts[i])); // Append the static text
+
+            if (i < interactable.size()) {
+                Style style = Style.EMPTY;
+                InteractableChatComponent comp = interactable.get(i);
+
+                if (comp.HoverText != null && !comp.HoverText.isEmpty()) {
+                    style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Literal(comp.HoverText)));
+                }
+                if (comp.Command != null && !comp.Command.isEmpty()) {
+                    style = style.withClickEvent(new ClickEvent(comp.SuggestCommand ? ClickEvent.Action.SUGGEST_COMMAND : ClickEvent.Action.RUN_COMMAND, comp.Command));
+                }
+
+                // Create the clickable part if there's a corresponding argument
+                MutableComponent clickablePart = Component.literal(comp.Text).setStyle(style);
+                component.append(clickablePart); // Append the clickable part
+            }
+        }
+
+        return component; // Return the complete component
     }
 }

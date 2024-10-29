@@ -10,42 +10,55 @@ public class DimensionData {
     public String Key;
 
     @ConfigField(comment = "Name of the dimension, example: overworld")
+    @ValueEditor(type = EFieldType.TEXT)
     public String DisplayName;
 
     @ConfigField(comment = "Automatically allow players based on the specified dates for entering and leaving.")
+    @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean AutoAllowByDate;
 
     @ConfigField(comment = "The date when players will be allowed to enter. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 15 minutes.")
+    @ValueEditor(type = EFieldType.TEXT)
     public String DateToAllowEnter;
 
     @ConfigField(comment = "The date when players will be allowed to leave. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 15 minutes.")
+    @ValueEditor(type = EFieldType.TEXT)
     public String DateToAllowLeave;
 
     @ConfigField(comment = "Whether unauthorized players should be kicked from the dimension.")
+    @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean KickUnauthorizedPlayers;
 
     @ConfigField(comment = "Allow players to be kicked to their bed spawn if unauthorized.")
+    @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean AllowKickToBed;
 
     @ConfigField(comment = "The dimension to send unauthorized players to if kicked.")
+    @ValueEditor(type = EFieldType.WORLD_KEY)
     public String KickTargetDimension;
 
     @ConfigField(comment = "Whether players are allowed to enter the dimension.")
+    @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean AllowEnter;
 
     @ConfigField(comment = "Require players to have a specific permission to enter the dimension.\nNote: At the moment permissions are only supported by the plugin version.")
+    @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean RequireEnterPermission;
 
     @ConfigField(comment = "The permission needed for players to enter.")
+    @ValueEditor(type = EFieldType.TEXT)
     public String EnterPermission;
 
     @ConfigField(comment = "Whether players are allowed to leave the dimension.")
+    @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean AllowLeave;
 
     @ConfigField(comment = "Require players to have a specific permission to leave.\nNote: At the moment permissions are only supported by the plugin version.")
+    @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean RequireLeavePermission;
 
     @ConfigField(comment = "The permission needed for players to leave.")
+    @ValueEditor(type = EFieldType.TEXT)
     public String LeavePermission;
 
     public DimensionData() {}
