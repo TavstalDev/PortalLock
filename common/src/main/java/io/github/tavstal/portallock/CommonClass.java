@@ -82,8 +82,14 @@ public class CommonClass {
         return _config;
     }
 
+    /**
+     * Updates the configuration settings with the provided values.
+     *
+     * @param newValue an instance of {@code CommonConfig} containing the updated configuration values.
+     */
     public static void UpdateConfig(CommonConfig newValue) {
         _config = newValue;
+        ConfigUtils.saveConfig(_config);
     }
 
     /**
