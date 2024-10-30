@@ -15,6 +15,7 @@
       "invalidWorldKey": "§cThe §e{0}§c world key is invalid.",
       "invalidBoolean": "§e{0}§c is not a valid boolean value.",
       "invalidNumber": "§e{0}§c is not a valid number. Valid types: §eByte, Integer, Double, Float",
+      "invalidDate": "§e{0}§c is not a valid date. Valid format: §eyyyy-MM-dd HH:mm",
       "success": "§aYou have successfully modified the dimension."
     },
     "remove": {
