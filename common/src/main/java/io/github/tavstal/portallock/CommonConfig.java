@@ -79,7 +79,7 @@ public class CommonConfig {
                 "§aEntering",
                 "§e%display_name%",
                 false,
-                "§aEntering §e%display_name%§a.",
+                "§8[§bPortal§3Lock§8] §aEntering §e%display_name%§a.",
                 false,
                 "§aEntering §e%display_name%§a."
         );
@@ -88,7 +88,7 @@ public class CommonConfig {
                 "§cFailed to enter",
                 "§e%display_name%",
                 true,
-                "§cFailed to enter into §e%display_name%§c.",
+                "§8[§bPortal§3Lock§8] §cFailed to enter into §e%display_name%§c.",
                 false,
                 "§cFailed to enter into §e%display_name%§c."
         );
@@ -97,7 +97,7 @@ public class CommonConfig {
                 "§cFailed to enter",
                 "§e%display_name%",
                 true,
-                "§cFailed to enter into §e%display_name%§c because of missing permission.",
+                "§8[§bPortal§3Lock§8] §cFailed to enter into §e%display_name%§c because of missing permission.",
                 false,
                 "§cFailed to enter into §e%display_name%§c because of missing permission."
         );
@@ -106,7 +106,7 @@ public class CommonConfig {
                 "§cFailed to enter",
                 "§e%display_name%",
                 true,
-                "§cUnable to enter into §e%display_name%§c. The dimension will be unlocked after §e%time_left_to_unlock%",
+                "§8[§bPortal§3Lock§8] §cUnable to enter into §e%display_name%§c. The dimension will be unlocked after §e%time_left_to_unlock%",
                 false,
                 "§cUnable to enter into §e%display_name%§c. The dimension will be unlocked at §e%time_left_to_unlock%"
         );
@@ -116,7 +116,7 @@ public class CommonConfig {
                 "§aLeaving",
                 "§e%display_name%",
                 false,
-                "§aLeaving §e%display_name%§a.",
+                "§8[§bPortal§3Lock§8] §aLeaving §e%display_name%§a.",
                 false,
                 "§aLeaving §e%display_name%§a."
         );
@@ -125,7 +125,7 @@ public class CommonConfig {
                 "§cFailed to leave",
                 "§e%display_name%",
                 true,
-                "§cFailed to leave from §e%display_name%§c.",
+                "§8[§bPortal§3Lock§8] §cFailed to leave from §e%display_name%§c.",
                 false,
                 "§cFailed to leave from §e%display_name%§c."
         );
@@ -134,7 +134,7 @@ public class CommonConfig {
                 "§cFailed to leave",
                 "§e%display_name%",
                 true,
-                "§cFailed to leave from §e%display_name%§c because of missing permission.",
+                "§8[§bPortal§3Lock§8] §cFailed to leave from §e%display_name%§c because of missing permission.",
                 false,
                 "§cFailed to leave from §e%display_name%§c because of missing permission."
         );
@@ -143,7 +143,7 @@ public class CommonConfig {
                 "§cFailed to leave",
                 "§e%display_name%",
                 true,
-                "§cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%",
+                "§8[§bPortal§3Lock§8] §cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%",
                 false,
                 "§cUnable to leave from §e%display_name%§c. The dimension will allow you to leave after §e%time_left_to_unlock%"
         );

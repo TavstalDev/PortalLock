@@ -89,7 +89,7 @@ public class CommonClass {
      */
     public static void UpdateConfig(CommonConfig newValue) {
         _config = newValue;
-        ConfigUtils.saveConfig(_config);
+        ConfigUtils.saveConfig(newValue);
     }
 
     /**
@@ -229,7 +229,6 @@ public class CommonClass {
             LOG.error(ex.getLocalizedMessage());
         }
     }
-
 
     /**
      * Determines if a player’s transition between dimensions should be prevented.
