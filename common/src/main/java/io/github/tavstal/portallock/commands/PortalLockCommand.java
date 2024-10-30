@@ -48,8 +48,7 @@ public class PortalLockCommand {
      * </p>
      * @param dispatcher The command dispatcher used to register the commands.
      */
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
-    {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         // Create the command itself
         LiteralCommandNode<CommandSourceStack> commandNode = dispatcher.register(
                 Commands.literal(Name) // Create the command
@@ -187,7 +186,7 @@ public class PortalLockCommand {
     }
     //#endregion
 
-    //#region Subcommands
+    //#region SubCommands
     /**
      * Executes the "add" command.
      *
@@ -282,7 +281,7 @@ public class PortalLockCommand {
             }
 
             if (field == null) {
-                entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidField", newValue));
+                entity.sendSystemMessage(Translations.GetLocaleCompPrefix("commands.edit.invalidField", fieldKey));
                 return 0;
             }
 
@@ -298,7 +297,7 @@ public class PortalLockCommand {
                             field.set(dimensionData, false);
                         }
                         default -> {
-                            entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidBoolean", newValue));
+                            entity.sendSystemMessage(Translations.GetLocaleCompPrefix("commands.edit.invalidBoolean", newValue));
                             return 0;
                         }
                     }
@@ -308,11 +307,12 @@ public class PortalLockCommand {
                 }
                 case DATETIME -> {
                     try {
-                        var date = LocalDateTime.parse(newValue, CommonClass.DateFormatter);
-                        field.set(dimensionData, date);
+                        LocalDateTime.parse(newValue, CommonClass.DateFormatter);
+                        // If the date is invalid then it won't be set.
+                        field.set(dimensionData, newValue);
                     }
                     catch (Exception ex) {
-                        entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidDate", newValue));
+                        entity.sendSystemMessage(Translations.GetLocaleCompPrefix("commands.edit.invalidDate", newValue));
                         return 0;
                     }
 
@@ -332,7 +332,7 @@ public class PortalLockCommand {
                     }
                     else
                     {
-                        entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidNumber", newValue));
+                        entity.sendSystemMessage(Translations.GetLocaleCompPrefix("commands.edit.invalidNumber", newValue));
                         return 0;
                     }
                 }
@@ -346,7 +346,7 @@ public class PortalLockCommand {
                     }
 
                     if (!isValid) {
-                        entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidWorldKey", newValue));
+                        entity.sendSystemMessage(Translations.GetLocaleCompPrefix("commands.edit.invalidWorldKey", newValue));
                         return 0;
                     }
 
@@ -357,7 +357,7 @@ public class PortalLockCommand {
             config.Dimensions.remove(index);
             config.Dimensions.add(index, dimensionData);
             CommonClass.UpdateConfig(config);
-            entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.success"));
+            entity.sendSystemMessage(Translations.GetLocaleCompPrefix("commands.edit.success"));
             return Command.SINGLE_SUCCESS;
         }
         catch (Exception ex) {

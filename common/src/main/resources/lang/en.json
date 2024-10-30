@@ -53,9 +53,9 @@
     }
   },
   "time": {
-    "days": "§e{0} §aday(s)",
-    "hours": "§e{0} §ahours()",
-    "minutes": "§e{0} §aminute(s)",
-    "seconds": "§e{0} §asecond(s)"
+    "days": "§e{0} §cday(s) ",
+    "hours": "§e{0} §chour(s) ",
+    "minutes": "§e{0} §cminute(s) ",
+    "seconds": "§e{0} §csecond(s) "
   }
 }

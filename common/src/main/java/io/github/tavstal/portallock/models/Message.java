@@ -50,13 +50,13 @@ public class Message {
         int seconds = duration.toSecondsPart();
 
         if (days > 0)
-            remainingTime += Translations.GetLocale("time_days", days);
+            remainingTime += Translations.GetLocale("time.days", days);
         if (hours > 0)
-            remainingTime += Translations.GetLocale("time_hours", hours);
+            remainingTime += Translations.GetLocale("time.hours", hours);
         if (minutes > 0)
-            remainingTime += Translations.GetLocale("time_minutes", minutes);
+            remainingTime += Translations.GetLocale("time.minutes", minutes);
         if (seconds > 0)
-            remainingTime += Translations.GetLocale("time_seconds", seconds);
+            remainingTime += Translations.GetLocale("time.seconds", seconds);
 
         if (Chat.Enable) {
             player.sendSystemMessage(ModUtils.Literal(Chat.Message.replaceAll("%display_name%", displayName).replaceAll("%time_left_to_unlock%", remainingTime)));
