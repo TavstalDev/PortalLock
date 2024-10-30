@@ -18,11 +18,11 @@ public class DimensionData {
     public boolean AutoAllowByDate;
 
     @ConfigField(comment = "The date when players will be allowed to enter. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 15 minutes.")
-    @ValueEditor(type = EFieldType.TEXT)
+    @ValueEditor(type = EFieldType.DATETIME)
     public String DateToAllowEnter;
 
     @ConfigField(comment = "The date when players will be allowed to leave. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 15 minutes.")
-    @ValueEditor(type = EFieldType.TEXT)
+    @ValueEditor(type = EFieldType.DATETIME)
     public String DateToAllowLeave;
 
     @ConfigField(comment = "Whether unauthorized players should be kicked from the dimension.")
