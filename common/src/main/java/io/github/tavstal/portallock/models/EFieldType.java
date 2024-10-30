@@ -4,5 +4,6 @@ public enum EFieldType {
     TEXT,
     NUMBER,
     BOOLEAN,
-    WORLD_KEY
+    WORLD_KEY,
+    DATETIME
 }
