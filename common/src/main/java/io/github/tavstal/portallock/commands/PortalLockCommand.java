@@ -15,20 +15,18 @@ import io.github.tavstal.portallock.models.DimensionData;
 import io.github.tavstal.portallock.models.EFieldType;
 import io.github.tavstal.portallock.models.InteractableChatComponent;
 import io.github.tavstal.portallock.models.ValueEditor;
-import io.github.tavstal.portallock.utils.EntityUtils;
+import io.github.tavstal.portallock.utils.MathUtils;
 import io.github.tavstal.portallock.utils.ModUtils;
 import io.github.tavstal.portallock.utils.WorldUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -240,10 +238,19 @@ public class PortalLockCommand {
         }
     }
 
+    /**
+     * Executes the "edit" command.
+     *
+     * @param command The command context containing information about the command
+     *                execution and the source of the command.
+     * @return The result of the command execution, which is typically a success
+     *         indicator (e.g., {@link Command#SINGLE_SUCCESS}).
+     */
     private static int executeEdit(CommandContext<CommandSourceStack> command){
         Entity entity = command.getSource().getEntity();
         if (entity == null)
             return 0;
+        MinecraftServer server = command.getSource().getServer();
         String worldKey = StringArgumentType.getString(command, "worldKey");
         String fieldKey = StringArgumentType.getString(command, "variable");
         String newValue = StringArgumentType.getString(command, "newValue");
@@ -251,11 +258,13 @@ public class PortalLockCommand {
         try {
             CommonConfig config = CommonClass.CONFIG();
             DimensionData dimensionData = null;
+            int index = 0;
             for (var dimension : config.Dimensions) {
                 if (dimension.Key.equalsIgnoreCase(worldKey)) {
                     dimensionData = dimension;
                     break;
                 }
+                index++;
             }
 
             if (dimensionData == null) {
@@ -263,7 +272,92 @@ public class PortalLockCommand {
                 return 0;
             }
 
-            // TODO
+            List<Field> fields = Arrays.stream(dimensionData.getClass().getFields()).filter(x -> x.isAnnotationPresent(ValueEditor.class)).toList();
+            Field field = null;
+            for (var f : fields) {
+                if (f.getName().equals(fieldKey)) {
+                    field = f;
+                    break;
+                }
+            }
+
+            if (field == null) {
+                entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidField", newValue));
+                return 0;
+            }
+
+            field.setAccessible(true);
+            ValueEditor annotation = field.getAnnotation(ValueEditor.class);
+            switch (annotation.type()) {
+                case BOOLEAN -> {
+                    switch (newValue.toLowerCase()) {
+                        case "true", "on", "yes", "1" -> {
+                            field.set(dimensionData, true);
+                        }
+                        case "false", "off", "no", "0" -> {
+                            field.set(dimensionData, false);
+                        }
+                        default -> {
+                            entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidBoolean", newValue));
+                            return 0;
+                        }
+                    }
+                }
+                case TEXT -> {
+                    field.set(dimensionData, newValue);
+                }
+                case DATETIME -> {
+                    try {
+                        var date = LocalDateTime.parse(newValue, CommonClass.DateFormatter);
+                        field.set(dimensionData, date);
+                    }
+                    catch (Exception ex) {
+                        entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidDate", newValue));
+                        return 0;
+                    }
+
+                }
+                case NUMBER -> {
+                    if (MathUtils.isInt(newValue) && field.getType() == int.class) {
+                        field.set(dimensionData, Integer.parseInt(newValue));
+                    }
+                    else if (MathUtils.isFloat(newValue) && field.getType() == float.class) {
+                        field.set(dimensionData, Float.parseFloat(newValue));
+                    }
+                    else if (MathUtils.isByte(newValue) && field.getType() == byte.class) {
+                        field.set(dimensionData, Byte.parseByte(newValue));
+                    }
+                    else if (MathUtils.isDecimal(newValue) && field.getType() == double.class) {
+                        field.set(dimensionData, Double.parseDouble(newValue));
+                    }
+                    else
+                    {
+                        entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidNumber", newValue));
+                        return 0;
+                    }
+                }
+                case WORLD_KEY -> {
+                    boolean isValid = false;
+                    for (var key : server.levelKeys()) {
+                        if (key.location().toString().equals(newValue)) {
+                            isValid = true;
+                            break;
+                        }
+                    }
+
+                    if (!isValid) {
+                        entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.invalidWorldKey", newValue));
+                        return 0;
+                    }
+
+                    field.set(dimensionData, newValue);
+                }
+            }
+
+            config.Dimensions.remove(index);
+            config.Dimensions.add(index, dimensionData);
+            CommonClass.UpdateConfig(config);
+            entity.sendSystemMessage(Translations.GetLocaleComp("commands.edit.success"));
             return Command.SINGLE_SUCCESS;
         }
         catch (Exception ex) {
@@ -273,6 +367,14 @@ public class PortalLockCommand {
         }
     }
 
+    /**
+     * Executes the "remove" command.
+     *
+     * @param command The command context containing information about the command
+     *                execution and the source of the command.
+     * @return The result of the command execution, which is typically a success
+     *         indicator (e.g., {@link Command#SINGLE_SUCCESS}).
+     */
     private static int executeRemove(CommandContext<CommandSourceStack> command){
         Entity entity = command.getSource().getEntity();
         if (entity == null)
@@ -306,6 +408,14 @@ public class PortalLockCommand {
         }
     }
 
+    /**
+     * Executes the "list" command.
+     *
+     * @param command The command context containing information about the command
+     *                execution and the source of the command.
+     * @return The result of the command execution, which is typically a success
+     *         indicator (e.g., {@link Command#SINGLE_SUCCESS}).
+     */
     private static int executeList(CommandContext<CommandSourceStack> command, int page){
         Entity entity = command.getSource().getEntity();
         if (entity == null)
@@ -412,6 +522,14 @@ public class PortalLockCommand {
         }
     }
 
+    /**
+     * Executes the "info" command.
+     *
+     * @param command The command context containing information about the command
+     *                execution and the source of the command.
+     * @return The result of the command execution, which is typically a success
+     *         indicator (e.g., {@link Command#SINGLE_SUCCESS}).
+     */
     private static int executeInfo(CommandContext<CommandSourceStack> command, int page){
         Entity entity = command.getSource().getEntity();
         if (entity == null)
@@ -457,7 +575,7 @@ public class PortalLockCommand {
                 args.add(new InteractableChatComponent(field.getName()));
 
                 switch (annotation.type()) {
-                    case TEXT, NUMBER, WORLD_KEY -> {
+                    case TEXT, NUMBER, WORLD_KEY, DATETIME -> {
                         String btnLocale;
                         String btnValue;
                         var fieldValue = field.get(dimensionData);
