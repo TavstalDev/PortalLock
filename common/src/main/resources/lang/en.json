@@ -11,6 +11,10 @@
       "success": "§aYou have successfully added the §e{0}§a dimension."
     },
     "edit": {
+      "invalidField": "§cThe §e{0}§c field does not exist.",
+      "invalidWorldKey": "§cThe §e{0}§c world key is invalid.",
+      "invalidBoolean": "§e{0}§c is not a valid boolean value.",
+      "invalidNumber": "§e{0}§c is not a valid number. Valid types: §eByte, Integer, Double, Float",
       "success": "§aYou have successfully modified the dimension."
     },
     "remove": {
