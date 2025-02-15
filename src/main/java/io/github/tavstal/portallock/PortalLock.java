@@ -47,7 +47,7 @@ public class PortalLock extends JavaPlugin {
     @Override
     public void onEnable() {
         Instance = this;
-        LoggerUtils.LogInfo("Loading OpenKits...");
+        LoggerUtils.LogInfo("Loading RespawnTimer...");
 
         // Register Events
         EventListener.init();
