@@ -1,0 +1,59 @@
+# Supported locales: en, hu
+locale: en
+# Shows more logs than usual. Helps locating errors.
+debug: true
+# How often should the server check the auto allow dates in minutes.
+updateInterval: 15
+# The sound event triggered on successful entry.
+successSound: "PLAYER_LEVELUP"
+# The sound event triggered on failed entry.
+failEnterSound: "VILLAGER_NO"
+# The sound event triggered on failed exit.
+failLeaveSound: "VILLAGER_NO"
+# The message shown to players on successful entry.
+enterSuccess:
+  enableChatMsg: false
+  enableTitleMsg: true
+  enableActionBarMsg: false
+# The message shown to players on failed entry.
+enterFail:
+  enableChatMsg: true
+  enableTitleMsg: false
+  enableActionBarMsg: false
+# The message shown to players on failed entry due to permission.
+enterFailPermission:
+  enableChatMsg: true
+  enableTitleMsg: false
+  enableActionBarMsg: false
+# Message displayed when the player fails to enter, but it will be auto unlocked.
+enterFailAutoAllow:
+  enableChatMsg: true
+  enableTitleMsg: false
+  enableActionBarMsg: true
+# The message shown to players on successful exit.
+exitSuccess:
+  enableChatMsg: false
+  enableTitleMsg: false
+  enableActionBarMsg: false
+# The message shown to players on failed exit.
+exitFail:
+  enableChatMsg: true
+  enableTitleMsg: false
+  enableActionBarMsg: false
+# The message shown to players on failed exit due to permission.
+exitFailPermission:
+  enableChatMsg: true
+  enableTitleMsg: false
+  enableActionBarMsg: false
+# Message displayed when the player fails to exit, but it will be auto unlocked.
+exitFailAutoAllow:
+  enableChatMsg: true
+  enableTitleMsg: false
+  enableActionBarMsg: true
+unlock:
+  enableChatMsg: true
+  enableTitleMsg: true
+  enableActionBarMsg: false
+
+# Do NOT edit this
+FileVersion: 1

@@ -1,0 +1,7 @@
+main: io.github.tavstal.portallock.PortalLock
+version: 1.0.0
+
+name: PortalLock
+description: Prevents players from speed running the game by locking portals.
+author: Tavstal
+website: https://github.com/TavstalDev/PortalLock
