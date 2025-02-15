@@ -79,7 +79,7 @@ public class PortalLock extends JavaPlugin {
         }
 
         // Schedule a task to run every second
-        LoggerUtils.LogInfo("PoralLock has been successfully loaded.");
+        LoggerUtils.LogInfo("PortalLock has been successfully loaded.");
         if (!isUpToDate())
             LoggerUtils.LogWarning("A new version of PortalLock is available! Download it at: " + DOWNLOAD_URL);
     }
