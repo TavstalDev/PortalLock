@@ -5,3 +5,7 @@ name: PortalLock
 description: Prevents players from speed running the game by locking portals.
 author: Tavstal
 website: https://github.com/TavstalDev/PortalLock
+
+commands:
+  portallock:
+    description: ""
