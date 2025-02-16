@@ -14,5 +14,4 @@ public @interface ValueEditor {
      * @return The field type as an EFieldType enum.
      */
     EFieldType type();
-    // TODO Order
 }

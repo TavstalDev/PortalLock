@@ -1,6 +1,7 @@
 package io.github.tavstal.portallock.commands;
 
 import io.github.tavstal.portallock.PortalLock;
+import io.github.tavstal.portallock.models.ConfigField;
 import io.github.tavstal.portallock.models.DimensionData;
 import io.github.tavstal.portallock.models.EFieldType;
 import io.github.tavstal.portallock.models.ValueEditor;
@@ -19,6 +20,7 @@ import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * CommandPortalLock class handles the execution of the PortalLock commands.
@@ -204,7 +206,10 @@ public class CommandPortalLock implements CommandExecutor {
                         put("dimension", dimensionName);
                     }});
 
-                    List<Field> fields = Arrays.stream(dimensionData.getClass().getFields()).filter(x -> x.isAnnotationPresent(ValueEditor.class)).toList();
+                    List<Field> fields = Arrays.stream(dimensionData.getClass().getFields())
+                            .filter(x -> x.isAnnotationPresent(ValueEditor.class))
+                            .sorted(Comparator.comparingInt(x -> x.getAnnotation(ConfigField.class).order()))
+                            .toList();
                     boolean reachedEnd = false;
                     int maxPage = 1 + (fields.size() / 15);
 
@@ -356,7 +361,7 @@ public class CommandPortalLock implements CommandExecutor {
                         return true;
                     }
 
-                    if (args.length != 4) {
+                    if (args.length < 4) {
                         ChatUtils.sendLocalizedMsg(player, "Commands.Edit.Usage");
                         return true;
                     }
@@ -394,7 +399,7 @@ public class CommandPortalLock implements CommandExecutor {
                         return true;
                     }
 
-                    String newValue = args[3];
+                    String newValue = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
                     field.setAccessible(true);
                     ValueEditor annotation = field.getAnnotation(ValueEditor.class);
                     switch (annotation.type()) {
@@ -409,6 +414,7 @@ public class CommandPortalLock implements CommandExecutor {
                                     return true;
                                 }
                             }
+                            break;
                         }
                         case TEXT -> field.set(dimensionData, newValue);
                         case DATETIME -> {
@@ -418,12 +424,12 @@ public class CommandPortalLock implements CommandExecutor {
                                 field.set(dimensionData, newValue);
                             }
                             catch (Exception ex) {
-                                ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidDateTime", new Hashtable<>() {{
+                                ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidDate", new Hashtable<>() {{
                                     put("value", newValue);
                                 }});
                                 return true;
                             }
-
+                            break;
                         }
                         case NUMBER -> {
                             if (MathUtils.isInt(newValue) && field.getType() == int.class) {
@@ -445,6 +451,7 @@ public class CommandPortalLock implements CommandExecutor {
                                 }});
                                 return true;
                             }
+                            break;
                         }
                         case WORLD_KEY -> {
                             boolean isValid = false;
@@ -463,6 +470,7 @@ public class CommandPortalLock implements CommandExecutor {
                             }
 
                             field.set(dimensionData, newValue);
+                            break;
                         }
                     }
 

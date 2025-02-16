@@ -11,58 +11,58 @@ import java.time.LocalDateTime;
 
 public class DimensionData {
 
-    @ConfigField(comment = "Key of the dimension, example: minecraft:overworld")
+    @ConfigField(order = 1, comment = "Key of the dimension, example: minecraft:overworld")
     public String Key;
 
-    @ConfigField(comment = "Name of the dimension, example: overworld")
+    @ConfigField(order = 2, comment = "Name of the dimension, example: overworld")
     @ValueEditor(type = EFieldType.TEXT)
     public String DisplayName;
 
-    @ConfigField(comment = "Automatically allow players based on the specified dates for entering and leaving.")
+    @ConfigField(order = 3, comment = "Automatically allow players based on the specified dates for entering and leaving.")
     @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean AutoAllowByDate;
 
-    @ConfigField(comment = "The date when players will be allowed to enter. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 15 minutes.")
+    @ConfigField(order = 4, comment = "The date when players will be allowed to enter. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 15 minutes.")
     @ValueEditor(type = EFieldType.DATETIME)
     public String DateToAllowEnter;
 
-    @ConfigField(comment = "The date when players will be allowed to leave. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 15 minutes.")
+    @ConfigField(order = 5, comment = "The date when players will be allowed to leave. Format: YYYY-MM-DD HH:mm.\nNote: It is checked every 15 minutes.")
     @ValueEditor(type = EFieldType.DATETIME)
     public String DateToAllowLeave;
 
-    @ConfigField(comment = "Whether unauthorized players should be kicked from the dimension.")
+    @ConfigField(order =  6, comment = "Whether unauthorized players should be kicked from the dimension.")
     @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean KickUnauthorizedPlayers;
 
-    @ConfigField(comment = "Allow players to be kicked to their bed spawn if unauthorized.")
+    @ConfigField(order =  7, comment = "Allow players to be kicked to their bed spawn if unauthorized.")
     @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean AllowKickToBed;
 
-    @ConfigField(comment = "The dimension to send unauthorized players to if kicked.")
+    @ConfigField(order = 8, comment = "The dimension to send unauthorized players to if kicked.")
     @ValueEditor(type = EFieldType.WORLD_KEY)
     public String KickTargetDimension;
 
-    @ConfigField(comment = "Whether players are allowed to enter the dimension.")
+    @ConfigField(order = 9, comment = "Whether players are allowed to enter the dimension.")
     @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean AllowEnter;
 
-    @ConfigField(comment = "Require players to have a specific permission to enter the dimension.\nNote: At the moment permissions are only supported by the plugin version.")
+    @ConfigField(order = 10, comment = "Require players to have a specific permission to enter the dimension.\nNote: At the moment permissions are only supported by the plugin version.")
     @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean RequireEnterPermission;
 
-    @ConfigField(comment = "The permission needed for players to enter.")
+    @ConfigField(order = 11, comment = "The permission needed for players to enter.")
     @ValueEditor(type = EFieldType.TEXT)
     public String EnterPermission;
 
-    @ConfigField(comment = "Whether players are allowed to leave the dimension.")
+    @ConfigField(order = 12, comment = "Whether players are allowed to leave the dimension.")
     @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean AllowLeave;
 
-    @ConfigField(comment = "Require players to have a specific permission to leave.\nNote: At the moment permissions are only supported by the plugin version.")
+    @ConfigField(order = 13, comment = "Require players to have a specific permission to leave.\nNote: At the moment permissions are only supported by the plugin version.")
     @ValueEditor(type = EFieldType.BOOLEAN)
     public boolean RequireLeavePermission;
 
-    @ConfigField(comment = "The permission needed for players to leave.")
+    @ConfigField(order = 14, comment = "The permission needed for players to leave.")
     @ValueEditor(type = EFieldType.TEXT)
     public String LeavePermission;
 
@@ -146,7 +146,7 @@ public class DimensionData {
                 Duration duration = Duration.between(LocalDateTime.now(), GetEnterDate());
                 long seconds = duration.getSeconds();
                 long days = seconds / 86400;
-                long hours = seconds / 3600;
+                long hours =  (seconds % 86400) / 3600;
                 long minutes = (seconds % 3600) / 60;
                 long remainingSeconds = seconds % 60;
                 time = time.replace("%days%", String.format("%02d", days))
@@ -205,7 +205,7 @@ public class DimensionData {
                 Duration duration = Duration.between(LocalDateTime.now(), GetLeaveDate());
                 long seconds = duration.getSeconds();
                 long days = seconds / 86400;
-                long hours = seconds / 3600;
+                long hours =  (seconds % 86400) / 3600;
                 long minutes = (seconds % 3600) / 60;
                 long remainingSeconds = seconds % 60;
                 time = time.replace("%days%", String.format("%02d", days))

@@ -41,11 +41,12 @@ public class DimensionUtils {
         TypeDescription dimensionDataDescription = new TypeDescription(DimensionData.class);
         constructor.addTypeDescription(dimensionDataDescription);
 
-        Representer representer = new Representer(new DumperOptions());
-        representer.addClassTag(DimensionData.class, Tag.MAP);
-
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
+
+        Representer representer = new Representer(options);
+        representer.addClassTag(DimensionData.class, Tag.MAP);
 
         return new Yaml(constructor, representer, options);
     }

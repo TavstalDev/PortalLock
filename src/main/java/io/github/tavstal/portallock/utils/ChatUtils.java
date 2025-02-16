@@ -58,7 +58,11 @@ public class ChatUtils {
         Enumeration<String> keys = parameters.keys();
         while (keys.hasMoreElements()) {
             String dirKey = keys.nextElement();
-            rawMessage = rawMessage.replace("%" + dirKey + "%", parameters.get(dirKey).toString());
+            var value = parameters.get(dirKey);
+            if (value != null)
+                rawMessage = rawMessage.replace("%" + dirKey + "%", value.toString());
+            else
+                rawMessage = rawMessage.replace("%" + dirKey + "%", "NULL");
         }
 
         sendRichMsg(player, rawMessage);
