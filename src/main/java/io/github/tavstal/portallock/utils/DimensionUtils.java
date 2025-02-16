@@ -6,7 +6,13 @@ import io.github.tavstal.portallock.models.ESoundType;
 import io.github.tavstal.portallock.models.EAnnouncement;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -25,6 +31,24 @@ import java.util.Objects;
 public class DimensionUtils {
     private static Map<String, Object> _data;
     public static List<DimensionData> Dimensions;
+
+    private static Yaml createYaml() {
+        // Create LoaderOptions
+        LoaderOptions loaderOptions = new LoaderOptions();
+
+        // Set up Constructor with LoaderOptions
+        Constructor constructor = new Constructor(loaderOptions);
+        TypeDescription dimensionDataDescription = new TypeDescription(DimensionData.class);
+        constructor.addTypeDescription(dimensionDataDescription);
+
+        Representer representer = new Representer(new DumperOptions());
+        representer.addClassTag(DimensionData.class, Tag.MAP);
+
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        return new Yaml(constructor, representer, options);
+    }
 
     /**
      * Loads the dimension data from the configuration file.
@@ -66,7 +90,7 @@ public class DimensionUtils {
                 }
 
                 // Convert dimensions list to YAML
-                Yaml yaml = new Yaml();
+                Yaml yaml = createYaml();
                 Map<String, Object> yamlData = yaml.load(new FileInputStream(filePath.toString()));
                 yamlData.put("dimensions", dimensions);
 
@@ -114,7 +138,31 @@ public class DimensionUtils {
             LoggerUtils.LogError("Failed to find the dimensions key in the configuration file.");
             return false;
         }
-        Dimensions = _data.get("dimensions") instanceof List ? (List<DimensionData>)_data.get("dimensions") : new ArrayList<>();
+        Dimensions = new ArrayList<>();
+        if (_data.get("dimensions") instanceof List) {
+            List<?> rawList = (List<?>) _data.get("dimensions");
+            for (Object item : rawList) {
+                if (item instanceof Map) {
+                    Map<String, Object> map = (Map<String, Object>) item;
+                    DimensionData dimensionData = new DimensionData();
+                    dimensionData.Key = (String) map.get("Key");
+                    dimensionData.DisplayName = (String) map.get("DisplayName");
+                    dimensionData.AutoAllowByDate = (Boolean) map.get("AutoAllowByDate");
+                    dimensionData.DateToAllowEnter = (String) map.get("DateToAllowEnter");
+                    dimensionData.DateToAllowLeave = (String) map.get("DateToAllowLeave");
+                    dimensionData.KickUnauthorizedPlayers = (Boolean) map.get("KickUnauthorizedPlayers");
+                    dimensionData.AllowKickToBed = (Boolean) map.get("AllowKickToBed");
+                    dimensionData.KickTargetDimension = (String) map.get("KickTargetDimension");
+                    dimensionData.AllowEnter = (Boolean) map.get("AllowEnter");
+                    dimensionData.RequireEnterPermission = (Boolean) map.get("RequireEnterPermission");
+                    dimensionData.EnterPermission = (String) map.get("EnterPermission");
+                    dimensionData.AllowLeave = (Boolean) map.get("AllowLeave");
+                    dimensionData.RequireLeavePermission = (Boolean) map.get("RequireLeavePermission");
+                    dimensionData.LeavePermission = (String) map.get("LeavePermission");
+                    Dimensions.add(dimensionData);
+                }
+            }
+        }
         return true;
     }
 
@@ -126,7 +174,7 @@ public class DimensionUtils {
     public static Boolean SaveConfig() {
         try {
             Path filePath = Paths.get(PortalLock.Instance.getDataFolder().getPath(), "dimensions.yml");
-            Yaml yaml = new Yaml();
+            Yaml yaml =  createYaml();
             _data.put("dimensions", Dimensions);
             try (FileWriter writer = new FileWriter(filePath.toString())) {
                 yaml.dump(_data, writer);
