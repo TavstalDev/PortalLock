@@ -54,7 +54,7 @@ Commands:
     Desc: "Shows the information about the dimension."
     Usage: "&aUsage: &e/portallock info [world] <page>"
     Title: "&e====== &aDimension &e====== &c%dimension% &e======"
-    Line: "&7» &e%variable% &7- %button1% %button2%",
+    Line: "&7» &e%variable% &7- %button1% %button2%"
     Bottom: "&e========== %prev_btn%&6%current_page%&e/&6%max_page%%next_btn% &e=========="
     PrevBtn: "&a<<< "
     NextBtn: " &a>>>"
