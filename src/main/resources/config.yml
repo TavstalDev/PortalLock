@@ -26,7 +26,7 @@ enterFailPermission:
   enableTitleMsg: false
   enableActionBarMsg: false
 # Message displayed when the player fails to enter, but it will be auto unlocked.
-enterFailAutoAllow:
+enterFailAutoUnlock:
   enableChatMsg: true
   enableTitleMsg: false
   enableActionBarMsg: true
@@ -46,7 +46,7 @@ exitFailPermission:
   enableTitleMsg: false
   enableActionBarMsg: false
 # Message displayed when the player fails to exit, but it will be auto unlocked.
-exitFailAutoAllow:
+exitFailAutoUnlock:
   enableChatMsg: true
   enableTitleMsg: false
   enableActionBarMsg: true
