@@ -38,18 +38,6 @@ public class ChatUtils {
      *
      * @param player     The player to send the message to.
      * @param key        The localization key.
-     * @param parameters The parameters for localization.
-     */
-    public static void sendLocalizedMsg(Player player, String key, Object... parameters) {
-        String rawMessage = LocaleUtils.Localize(key, parameters);
-        sendRichMsg(player, rawMessage);
-    }
-
-    /**
-     * Retrieves a localized message, translates color codes, and sends it to a player.
-     *
-     * @param player     The player to send the message to.
-     * @param key        The localization key.
      */
     public static void sendLocalizedMsg(Player player, String key) {
         String rawMessage = LocaleUtils.Localize(key);
@@ -90,11 +78,12 @@ public class ChatUtils {
         while (keys.hasMoreElements()) {
             @RegExp String dirKey = keys.nextElement();
             Component dirElem = parameters.get(dirKey);
-            if (!message.contains("%" + dirKey + "%"))
+            @RegExp String key = "%" + dirKey + "%";
+            if (!message.contains(key))
                 continue;
 
             result = result.replaceText(TextReplacementConfig.builder()
-                    .match(dirKey)
+                    .match(key)
                     .replacement(dirElem)
                     .build());
         }
@@ -112,8 +101,8 @@ public class ChatUtils {
             return MiniMessage.miniMessage().deserialize(message);
 
         // Convert '&' to '§' first (since ChatColor.stripColor requires '§')
-        String legacyColor = translateAlternateColorCodes(message);
-        return MiniMessage.miniMessage().deserialize(replacePlaceholders(legacyColor));
+        String legacyColor = translateAlternateColorCodes(replacePlaceholders(message));
+        return MiniMessage.miniMessage().deserialize(legacyToMiniMessage(legacyColor));
     }
 
     /**
