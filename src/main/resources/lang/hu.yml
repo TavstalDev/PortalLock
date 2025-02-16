@@ -93,7 +93,7 @@ DimensionMsg:
     SubTitle: "&e%dimension%"
     Chat: "%prefix% &cNincs jogosultságod belépni a &e%dimension%&c dimenzióba."
     ActionBar: "&cNincs jogosultságod belépni a &e%dimension%&c dimenzióba."
-  EnterFailAutoAllow:
+  EnterFailAutoUnlock:
     Title: "&cSikertelen belépés"
     SubTitle: "&e%dimension%"
     Chat: "%prefix% &cA &e%dimension%&c dimenzió zárolva van &e%time%&c időtartamra."
@@ -113,7 +113,7 @@ DimensionMsg:
     SubTitle: "&e%dimension%"
     Chat: "%prefix% &cNincs jogosultságod kilépni a &e%dimension%&c dimenzióból."
     ActionBar: "&cNincs jogosultságod kilépni a &e%dimension%&c dimenzióból."
-  ExitFailAutoAllow:
+  ExitFailAutoUnlock:
     Title: "&cSikertelen kilépés"
     SubTitle: "&e%dimension%"
     Chat: "%prefix% &cA &e%dimension%&c dimenzióból való kilépés zárolva van &e%time%&c időtartamra."

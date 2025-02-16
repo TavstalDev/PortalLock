@@ -94,7 +94,7 @@ DimensionMsg:
     SubTitle: "&e%dimension%"
     Chat: "%prefix% &cYou have no permission to enter the &e%dimension%&c dimension."
     ActionBar: "&cYou have no permission to enter the &e%dimension%&c dimension."
-  EnterFailAutoAllow:
+  EnterFailAutoUnlock:
     Title: "&cFailed to enter"
     SubTitle: "&e%dimension%"
     Chat: "%prefix% &cThe &e%dimension%&c dimension is locked for &e%time%&c."
@@ -114,7 +114,7 @@ DimensionMsg:
     SubTitle: "&e%dimension%"
     Chat: "%prefix% &cYou have no permission to exit the &e%dimension%&c dimension."
     ActionBar: "&cYou have no permission to exit the &e%dimension%&c dimension."
-  ExitFailAutoAllow:
+  ExitFailAutoUnlock:
     Title: "&cFailed to exit"
     SubTitle: "&e%dimension%"
     Chat: "%prefix% &cLeaving the &e%dimension%&c dimension is locked for &e%time%&c."
