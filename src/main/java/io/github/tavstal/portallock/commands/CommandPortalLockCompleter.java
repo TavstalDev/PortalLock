@@ -4,6 +4,7 @@ import io.github.tavstal.portallock.PortalLock;
 import io.github.tavstal.portallock.models.DimensionData;
 import io.github.tavstal.portallock.models.ValueEditor;
 import io.github.tavstal.portallock.utils.DimensionUtils;
+import io.github.tavstal.portallock.utils.LoggerUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -31,87 +32,98 @@ public class CommandPortalLockCompleter implements TabCompleter {
      */
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        if (sender instanceof ConsoleCommandSender) {
-            return null;
-        }
-        Player player = (Player) sender;
-        var server = PortalLock.Instance.getServer();
-        List<String> commandList = new ArrayList<>();
-
-        switch (args.length) {
-            case 0:
-            case 1: {
-                commandList.add("help");
-                if (player.hasPermission("portallock.commands.portallock.version"))
-                    commandList.add("version");
-                if (player.hasPermission("portallock.commands.portallock.reload"))
-                    commandList.add("reload");
-                if (player.hasPermission("portallock.commands.portallock.list"))
-                    commandList.add("list");
-                if (player.hasPermission("portallock.commands.portallock.info"))
-                    commandList.add("info");
-                if (player.hasPermission("portallock.commands.portallock.add"))
-                    commandList.add("add");
-                if (player.hasPermission("portallock.commands.portallock.remove"))
-                    commandList.add("remove");
-                if (player.hasPermission("portallock.commands.portallock.edit"))
-                    commandList.add("edit");
-
-                commandList.removeIf(cmd -> !cmd.toLowerCase().startsWith(args[0].toLowerCase()));
-                break;
+        try {
+            if (sender instanceof ConsoleCommandSender) {
+                return null;
             }
-            case 2: {
-                switch (args[0].toLowerCase()) {
-                    case "list":
-                        commandList.add("1");
-                        commandList.add("5");
-                        commandList.add("10");
-                    case "add": {
-                        for (var world : server.getWorlds()) {
-                            commandList.add(world.getName());
+            Player player = (Player) sender;
+            var server = PortalLock.Instance.getServer();
+            List<String> commandList = new ArrayList<>();
+
+            switch (args.length) {
+                case 0:
+                case 1: {
+                    commandList.add("help");
+                    if (player.hasPermission("portallock.commands.portallock.version"))
+                        commandList.add("version");
+                    if (player.hasPermission("portallock.commands.portallock.reload"))
+                        commandList.add("reload");
+                    if (player.hasPermission("portallock.commands.portallock.list"))
+                        commandList.add("list");
+                    if (player.hasPermission("portallock.commands.portallock.info"))
+                        commandList.add("info");
+                    if (player.hasPermission("portallock.commands.portallock.add"))
+                        commandList.add("add");
+                    if (player.hasPermission("portallock.commands.portallock.remove"))
+                        commandList.add("remove");
+                    if (player.hasPermission("portallock.commands.portallock.edit"))
+                        commandList.add("edit");
+
+                    commandList.removeIf(cmd -> !cmd.toLowerCase().startsWith(args[0].toLowerCase()));
+                    break;
+                }
+                case 2: {
+                    switch (args[0].toLowerCase()) {
+                        case "list": {
+                            commandList.add("1");
+                            commandList.add("5");
+                            commandList.add("10");
+                            break;
                         }
-                        break;
-                    }
-                    case "info":
-                    case "edit":
-                    case "remove": {
-                        for (var world : DimensionUtils.Dimensions) {
-                            commandList.add(world.Key);
+                        case "add": {
+                            for (var world : server.getWorlds()) {
+                                commandList.add(world.getName());
+                            }
+                            break;
                         }
-                        break;
+                        case "info":
+                        case "edit":
+                        case "remove": {
+                            for (var world : DimensionUtils.Dimensions) {
+                                commandList.add(world.Key);
+                            }
+                            break;
+                        }
                     }
-                    default:
-                        break;
+                    break;
+                }
+                case 3: {
+                    switch (args[0].toLowerCase()) {
+                        case "info": {
+                            commandList.add("1");
+                            commandList.add("5");
+                            commandList.add("10");
+                            break;
+                        }
+                        case "edit": {
+                            Field[] fields = DimensionData.class.getFields();
+
+                            for (Field field : fields) {
+                                if (!field.isAnnotationPresent(ValueEditor.class))
+                                    continue;
+
+                                commandList.add(field.getName());
+                            }
+
+                            commandList.removeIf(cmd -> !cmd.toLowerCase().startsWith(args[2].toLowerCase()));
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 4: {
+                    // Maybe add some more options here in the future
+                    break;
                 }
             }
-            case 3: {
-                switch (args[0].toLowerCase()) {
-                    case "info":
-                        commandList.add("1");
-                        commandList.add("5");
-                        commandList.add("10");
-                    case "edit": {
-                        Field[] fields = DimensionData.class.getFields();
 
-                        for (Field field : fields) {
-                            if (!field.isAnnotationPresent(ValueEditor.class))
-                                continue;
-
-                            commandList.add(field.getName());
-                        }
-
-                        commandList.removeIf(cmd -> !cmd.toLowerCase().startsWith(args[2].toLowerCase()));
-                    }
-                }
-                break;
-            }
-            case 4: {
-                // Maybe add some more options here in the future
-                break;
-            }
+            Collections.sort(commandList);
+            return commandList;
         }
-
-        Collections.sort(commandList);
-        return commandList;
+        catch (Exception ex) {
+            LoggerUtils.LogError("An error occurred while trying to tab complete the portallock command.");
+            LoggerUtils.LogError(ex.getMessage());
+            return new ArrayList<>();
+        }
     }
 }
