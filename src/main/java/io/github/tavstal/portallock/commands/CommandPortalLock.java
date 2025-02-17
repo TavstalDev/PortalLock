@@ -20,7 +20,6 @@ import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * CommandPortalLock class handles the execution of the PortalLock commands.
@@ -125,20 +124,20 @@ public class CommandPortalLock implements CommandExecutor {
 
                         if (dimensionData == null) {
                             String dimensionName = world.getName();
-                            player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize("Commands.List.Line"), new Hashtable<>() {{
+                            player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Line"), new Hashtable<>() {{
                                 put("dimension", ChatUtils.translateColors(dimensionName, true));
-                                put("button1", ChatUtils.translateColors(LocaleUtils.Localize("Commands.List.AddBtn"), true)
+                                put("button1", ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.AddBtn"), true)
                                         .clickEvent(ClickEvent.runCommand("/portallock add " + world.getName())));
                                 put("button2", Component.empty());
                             }}));
                         }
                         else {
                             String dimensionName = dimensionData.DisplayName;
-                            player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize("Commands.List.Line"), new Hashtable<>() {{
+                            player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Line"), new Hashtable<>() {{
                                 put("dimension", ChatUtils.translateColors(dimensionName, true));
-                                put("button1", ChatUtils.translateColors(LocaleUtils.Localize("Commands.List.InfoBtn"), true)
+                                put("button1", ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.InfoBtn"), true)
                                         .clickEvent(ClickEvent.runCommand("/portallock info " + world.getName())));
-                                put("button2", ChatUtils.translateColors(LocaleUtils.Localize("Commands.List.RemoveBtn"), true)
+                                put("button2", ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.RemoveBtn"), true)
                                         .clickEvent(ClickEvent.runCommand("/portallock remove " + world.getName())));
                             }}));
                         }
@@ -148,18 +147,18 @@ public class CommandPortalLock implements CommandExecutor {
                     Component prevBtn;
                     Component nextBtn;
                     if (page > 1)
-                        prevBtn = ChatUtils.translateColors(LocaleUtils.Localize("Commands.List.PrevBtn"), true)
+                        prevBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.PrevBtn"), true)
                                 .clickEvent(ClickEvent.runCommand("/portallock list " + (page - 1)));
                     else
-                        prevBtn = ChatUtils.translateColors(LocaleUtils.Localize("Commands.List.PrevBtn"), true);
+                        prevBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.PrevBtn"), true);
                     if (!reachedEnd && maxPage >= page + 1)
-                        nextBtn = ChatUtils.translateColors(LocaleUtils.Localize("Commands.List.NextBtn"), true)
+                        nextBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.NextBtn"), true)
                                 .clickEvent(ClickEvent.runCommand("/portallock list " + (page + 1)));
                     else
-                        nextBtn = ChatUtils.translateColors(LocaleUtils.Localize("Commands.List.NextBtn"), true);
+                        nextBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.NextBtn"), true);
 
                     int finalPage = page;
-                    player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize("Commands.List.Bottom"), new Hashtable<>() {{
+                    player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Bottom"), new Hashtable<>() {{
                         put("prev_btn", prevBtn);
                         put("current_page", Component.text(finalPage));
                         put("max_page", Component.text(maxPage));
@@ -236,13 +235,13 @@ public class CommandPortalLock implements CommandExecutor {
                                 var fieldValue = field.get(dimensionData);
 
                                 if (fieldValue == null) {
-                                    btnValue = LocaleUtils.Localize("Commands.Info.Inactive")
-                                            .replace("%value%", LocaleUtils.Localize(
+                                    btnValue = LocaleUtils.Localize(player,"Commands.Info.Inactive")
+                                            .replace("%value%", LocaleUtils.Localize(player,
                                                     annotation.type() == EFieldType.WORLD_KEY ? "Commands.Info.ActionWorld" : "Commands.Info.ActionCustom")
                                             );
                                 }
                                 else {
-                                    btnValue = LocaleUtils.Localize("Commands.Info.Active")
+                                    btnValue = LocaleUtils.Localize(player,"Commands.Info.Active")
                                             .replace("%value%",
                                                     fieldValue.toString().length() > 10 ? fieldValue.toString().substring(0, 10) + "..." : fieldValue.toString()
                                             );
@@ -273,8 +272,8 @@ public class CommandPortalLock implements CommandExecutor {
                                     }
                                 }
 
-                                String trueBtnValue = LocaleUtils.Localize(trueBtnLocale).replace("%value%", LocaleUtils.Localize("Commands.Info.ActionAllow"));
-                                String falseBtnValue = LocaleUtils.Localize(falseBtnLocale).replace("%value%", LocaleUtils.Localize("Commands.Info.ActionDeny"));
+                                String trueBtnValue = LocaleUtils.Localize(player,trueBtnLocale).replace("%value%", LocaleUtils.Localize(player,"Commands.Info.ActionAllow"));
+                                String falseBtnValue = LocaleUtils.Localize(player,falseBtnLocale).replace("%value%", LocaleUtils.Localize(player,"Commands.Info.ActionDeny"));
 
                                 parameters.put("button1", ChatUtils.translateColors(trueBtnValue, true)
                                         .clickEvent(ClickEvent.runCommand(
@@ -287,25 +286,25 @@ public class CommandPortalLock implements CommandExecutor {
                             }
                         }
 
-                        player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize("Commands.Info.Line"), parameters));
+                        player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.Info.Line"), parameters));
                     }
 
                     // Bottom message
                     Component prevBtn;
                     Component nextBtn;
                     if (page > 1)
-                        prevBtn = ChatUtils.translateColors(LocaleUtils.Localize("Commands.Info.PrevBtn"), true)
+                        prevBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.Info.PrevBtn"), true)
                                 .clickEvent(ClickEvent.runCommand("/portallock info " + dimensionKey + " " + (page - 1)));
                     else
-                        prevBtn = ChatUtils.translateColors(LocaleUtils.Localize("Commands.Info.PrevBtn"), true);
+                        prevBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.Info.PrevBtn"), true);
                     if (!reachedEnd && maxPage >= page + 1)
-                        nextBtn = ChatUtils.translateColors(LocaleUtils.Localize("Commands.Info.NextBtn"), true)
+                        nextBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.Info.NextBtn"), true)
                                 .clickEvent(ClickEvent.runCommand("/portallock info " + dimensionKey + " " + (page + 1)));
                     else
-                        nextBtn = ChatUtils.translateColors(LocaleUtils.Localize("Commands.Info.NextBtn"), true);
+                        nextBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.Info.NextBtn"), true);
 
                     int finalPage = page;
-                    player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize("Commands.Info.Bottom"), new Hashtable<>() {{
+                    player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.Info.Bottom"), new Hashtable<>() {{
                         put("prev_btn", prevBtn);
                         put("current_page", Component.text(finalPage));
                         put("max_page", Component.text(maxPage));
@@ -351,7 +350,7 @@ public class CommandPortalLock implements CommandExecutor {
                             )
                     );
                     DimensionUtils.SaveConfig();
-                    player.sendMessage(ChatUtils.translateColors(LocaleUtils.Localize("Commands.Add.Success").replace("%dimension%", displayName), true));
+                    player.sendMessage(ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.Add.Success").replace("%dimension%", displayName), true));
 
                     break;
                 }
@@ -539,55 +538,55 @@ public class CommandPortalLock implements CommandExecutor {
 
         Dictionary<String, Object> parameters = new Hashtable<>();
         parameters.put("subcommand", "help");
-        parameters.put("syntax", LocaleUtils.Localize("Commands.Help.Syntax"));
-        parameters.put("description", LocaleUtils.Localize("Commands.Help.Desc"));
+        parameters.put("syntax", LocaleUtils.Localize(player,"Commands.Help.Syntax"));
+        parameters.put("description", LocaleUtils.Localize(player,"Commands.Help.Desc"));
 
         ChatUtils.sendLocalizedMsg(player, "Commands.Help.Line", parameters);
         if (player.hasPermission("portallock.commands.portallock.reload")) {
             parameters.put("subcommand", "reload");
             parameters.put("syntax", "");
-            parameters.put("description", LocaleUtils.Localize("Commands.Reload.Desc"));
+            parameters.put("description", LocaleUtils.Localize(player,"Commands.Reload.Desc"));
             ChatUtils.sendLocalizedMsg(player, "Commands.Help.Line", parameters);
         }
         if (player.hasPermission("portallock.commands.portallock.version")) {
             parameters.put("subcommand", "version");
             parameters.put("syntax", "");
-            parameters.put("description", LocaleUtils.Localize("Commands.Version.Desc"));
+            parameters.put("description", LocaleUtils.Localize(player,"Commands.Version.Desc"));
             ChatUtils.sendLocalizedMsg(player, "Commands.Help.Line", parameters);
         }
 
         if (player.hasPermission("portallock.commands.portallock.list")) {
             parameters.put("subcommand", "list");
-            parameters.put("syntax", LocaleUtils.Localize("Commands.List.Syntax"));
-            parameters.put("description", LocaleUtils.Localize("Commands.List.Desc"));
+            parameters.put("syntax", LocaleUtils.Localize(player,"Commands.List.Syntax"));
+            parameters.put("description", LocaleUtils.Localize(player,"Commands.List.Desc"));
             ChatUtils.sendLocalizedMsg(player, "Commands.Help.Line", parameters);
         }
 
         if (player.hasPermission("portallock.commands.portallock.info")) {
             parameters.put("subcommand", "info");
-            parameters.put("syntax", LocaleUtils.Localize("Commands.Info.Syntax"));
-            parameters.put("description", LocaleUtils.Localize("Commands.Info.Desc"));
+            parameters.put("syntax", LocaleUtils.Localize(player,"Commands.Info.Syntax"));
+            parameters.put("description", LocaleUtils.Localize(player,"Commands.Info.Desc"));
             ChatUtils.sendLocalizedMsg(player, "Commands.Help.Line", parameters);
         }
 
         if (player.hasPermission("portallock.commands.portallock.add")) {
             parameters.put("subcommand", "add");
-            parameters.put("syntax", LocaleUtils.Localize("Commands.Add.Syntax"));
-            parameters.put("description", LocaleUtils.Localize("Commands.Add.Desc"));
+            parameters.put("syntax", LocaleUtils.Localize(player,"Commands.Add.Syntax"));
+            parameters.put("description", LocaleUtils.Localize(player,"Commands.Add.Desc"));
             ChatUtils.sendLocalizedMsg(player, "Commands.Help.Line", parameters);
         }
 
         if (player.hasPermission("portallock.commands.portallock.edit")) {
             parameters.put("subcommand", "edit");
-            parameters.put("syntax", LocaleUtils.Localize("Commands.Edit.Syntax"));
-            parameters.put("description", LocaleUtils.Localize("Commands.Edit.Desc"));
+            parameters.put("syntax", LocaleUtils.Localize(player,"Commands.Edit.Syntax"));
+            parameters.put("description", LocaleUtils.Localize(player,"Commands.Edit.Desc"));
             ChatUtils.sendLocalizedMsg(player, "Commands.Help.Line", parameters);
         }
 
         if (player.hasPermission("portallock.commands.portallock.remove")) {
             parameters.put("subcommand", "remove");
-            parameters.put("syntax", LocaleUtils.Localize("Commands.Remove.Syntax"));
-            parameters.put("description", LocaleUtils.Localize("Commands.Remove.Desc"));
+            parameters.put("syntax", LocaleUtils.Localize(player,"Commands.Remove.Syntax"));
+            parameters.put("description", LocaleUtils.Localize(player,"Commands.Remove.Desc"));
             ChatUtils.sendLocalizedMsg(player, "Commands.Help.Line", parameters);
         }
     }

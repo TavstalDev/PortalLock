@@ -1,5 +1,6 @@
 package io.github.tavstal.portallock.utils;
 
+import io.github.tavstal.portallock.PortalLock;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Objects;
 
 public class ChatUtils {
 
@@ -20,7 +22,7 @@ public class ChatUtils {
      */
     private static String replacePlaceholders(String message) {
         return message
-                .replace("%prefix%", LocaleUtils.Localize("General.Prefix"));
+                .replace("%prefix%", Objects.requireNonNull(PortalLock.GetConfig().getString("prefix")));
     }
 
     /**
@@ -40,7 +42,7 @@ public class ChatUtils {
      * @param key        The localization key.
      */
     public static void sendLocalizedMsg(Player player, String key) {
-        String rawMessage = LocaleUtils.Localize(key);
+        String rawMessage = LocaleUtils.Localize(player, key);
         sendRichMsg(player, rawMessage);
     }
 
@@ -52,17 +54,18 @@ public class ChatUtils {
      * @param parameters The dictionary containing placeholder keys and their corresponding values.
      */
     public static void sendLocalizedMsg(Player player, String key, Dictionary<String, Object> parameters) {
-        String rawMessage = LocaleUtils.Localize(key);
+        String rawMessage = LocaleUtils.Localize(player, key);
 
         // Get the keys
         Enumeration<String> keys = parameters.keys();
         while (keys.hasMoreElements()) {
-            String dirKey = keys.nextElement();
-            var value = parameters.get(dirKey);
-            if (value != null)
-                rawMessage = rawMessage.replace("%" + dirKey + "%", value.toString());
+            @RegExp String dirKey = keys.nextElement();
+            @RegExp String finalKey;
+            if (dirKey.startsWith("%"))
+                finalKey = dirKey;
             else
-                rawMessage = rawMessage.replace("%" + dirKey + "%", "NULL");
+                finalKey = "%" + dirKey + "%";
+            rawMessage = rawMessage.replace(finalKey, parameters.get(dirKey).toString());
         }
 
         sendRichMsg(player, rawMessage);
@@ -82,7 +85,11 @@ public class ChatUtils {
         while (keys.hasMoreElements()) {
             @RegExp String dirKey = keys.nextElement();
             Component dirElem = parameters.get(dirKey);
-            @RegExp String key = "%" + dirKey + "%";
+            @RegExp String key;
+            if (dirKey.startsWith("%"))
+                key = dirKey;
+            else
+                key = "%" + dirKey + "%";
             if (!message.contains(key))
                 continue;
 
@@ -102,7 +109,7 @@ public class ChatUtils {
      */
     public static Component translateColors(@NotNull String message, boolean checkLegacy) {
         if (!checkLegacy)
-            return MiniMessage.miniMessage().deserialize(message);
+            return MiniMessage.miniMessage().deserialize(replacePlaceholders(message));
 
         // Convert '&' to '§' first (since ChatColor.stripColor requires '§')
         String legacyColor = translateAlternateColorCodes(replacePlaceholders(message));

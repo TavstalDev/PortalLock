@@ -31,7 +31,7 @@ public class CommandPortalLockCompleter implements TabCompleter {
      * @return A list of possible completions for the final argument, or null to default to the standard list.
      */
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String @NotNull [] args) {
         try {
             if (sender instanceof ConsoleCommandSender) {
                 return null;
