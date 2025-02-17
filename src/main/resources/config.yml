@@ -1,7 +1,11 @@
-# Supported locales: en, hu
-locale: en
+# Supported locales: eng, hun
+locale: eng
+# If true, the plugin will try to use the player's locale
+usePlayerLocale: true
 # Shows more logs than usual. Helps locating errors.
 debug: true
+# Prefix for all messages
+prefix: "&dPortal&5Lock &8»&r"
 # How often should the server check the auto allow dates in minutes.
 updateInterval: 15
 # The sound event triggered on successful entry.

@@ -1,5 +1,4 @@
 General:
-  Prefix: "&dPortal&5Lock &8»&r"
   NoPermission: "%prefix% &cNincs jogosultságod ehhez."
   DimensionNotFound: "%prefix% &cNem sikerült lekérni a &e%dimension%&c dimenziót."
 Commands:

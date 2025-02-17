@@ -1,5 +1,4 @@
 General:
-  Prefix: "&dPortal&5Lock &8»&r"
   NoPermission: "%prefix% &cYou do not have permission to do that."
   DimensionNotFound: "%prefix% &cFailed to get the &e%dimension%&c dimension."
   UnknownError: "%prefix% &cUnknown error happened. Please report it."
