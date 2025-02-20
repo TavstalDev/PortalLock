@@ -75,12 +75,12 @@ public class CommandPortalLock implements CommandExecutor {
                         return true;
                     }
 
-                    Dictionary<String, Object> parameters = new Hashtable<>();
+                    Map<String, Object> parameters = new HashMap<>();
                     parameters.put("version", PortalLock.VERSION);
                     ChatUtils.sendLocalizedMsg(player, "Commands.Version.Current", parameters);
 
                     boolean isUpToDate = PortalLock.Instance.isUpToDate();
-                    parameters = new Hashtable<>();
+                    parameters = new HashMap<>();
                     if (isUpToDate) {
                         ChatUtils.sendLocalizedMsg(player, "Commands.Version.UpToDate");
                     } else {
@@ -124,7 +124,7 @@ public class CommandPortalLock implements CommandExecutor {
 
                         if (dimensionData == null) {
                             String dimensionName = world.getName();
-                            player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Line"), new Hashtable<>() {{
+                            player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Line"), new HashMap<>() {{
                                 put("dimension", ChatUtils.translateColors(dimensionName, true));
                                 put("button1", ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.AddBtn"), true)
                                         .clickEvent(ClickEvent.runCommand("/portallock add " + world.getName())));
@@ -133,7 +133,7 @@ public class CommandPortalLock implements CommandExecutor {
                         }
                         else {
                             String dimensionName = dimensionData.DisplayName;
-                            player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Line"), new Hashtable<>() {{
+                            player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Line"), new HashMap<>() {{
                                 put("dimension", ChatUtils.translateColors(dimensionName, true));
                                 put("button1", ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.InfoBtn"), true)
                                         .clickEvent(ClickEvent.runCommand("/portallock info " + world.getName())));
@@ -158,7 +158,7 @@ public class CommandPortalLock implements CommandExecutor {
                         nextBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.List.NextBtn"), true);
 
                     int finalPage = page;
-                    player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Bottom"), new Hashtable<>() {{
+                    player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.List.Bottom"), new HashMap<>() {{
                         put("prev_btn", prevBtn);
                         put("current_page", Component.text(finalPage));
                         put("max_page", Component.text(maxPage));
@@ -187,7 +187,7 @@ public class CommandPortalLock implements CommandExecutor {
                     }
 
                     if (dimensionData == null) {
-                        ChatUtils.sendLocalizedMsg(player, "General.DimensionNotFound", new Hashtable<>() {{
+                        ChatUtils.sendLocalizedMsg(player, "General.DimensionNotFound", new HashMap<>() {{
                             put("dimension", args[1]);
                         }});
                         return true;
@@ -201,7 +201,7 @@ public class CommandPortalLock implements CommandExecutor {
 
                     String dimensionKey = dimensionData.Key;
                     String dimensionName = dimensionData.DisplayName;
-                    ChatUtils.sendLocalizedMsg(player, "Commands.Info.Title", new Hashtable<>() {{
+                    ChatUtils.sendLocalizedMsg(player, "Commands.Info.Title", new HashMap<>() {{
                         put("dimension", dimensionName);
                     }});
 
@@ -225,7 +225,7 @@ public class CommandPortalLock implements CommandExecutor {
                             continue;*/
 
                         ValueEditor annotation = field.getAnnotation(ValueEditor.class);
-                        Dictionary<String, Component> parameters = new Hashtable<>() {{
+                        Map<String, Component> parameters = new HashMap<>() {{
                             put("variable", Component.text(field.getName()));
                         }};
 
@@ -304,7 +304,7 @@ public class CommandPortalLock implements CommandExecutor {
                         nextBtn = ChatUtils.translateColors(LocaleUtils.Localize(player,"Commands.Info.NextBtn"), true);
 
                     int finalPage = page;
-                    player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.Info.Bottom"), new Hashtable<>() {{
+                    player.sendMessage(ChatUtils.buildWithButtons(LocaleUtils.Localize(player,"Commands.Info.Bottom"), new HashMap<>() {{
                         put("prev_btn", prevBtn);
                         put("current_page", Component.text(finalPage));
                         put("max_page", Component.text(maxPage));
@@ -333,7 +333,7 @@ public class CommandPortalLock implements CommandExecutor {
                     }
 
                     if (dimensionData != null) {
-                        ChatUtils.sendLocalizedMsg(player, "Commands.Add.AlreadyExist", new Hashtable<>() {{
+                        ChatUtils.sendLocalizedMsg(player, "Commands.Add.AlreadyExist", new HashMap<>() {{
                             put("dimension", args[1]);
                         }});
                         return true;
@@ -376,7 +376,7 @@ public class CommandPortalLock implements CommandExecutor {
                     }
 
                     if (dimensionData == null) {
-                        ChatUtils.sendLocalizedMsg(player, "General.DimensionNotFound", new Hashtable<>() {{
+                        ChatUtils.sendLocalizedMsg(player, "General.DimensionNotFound", new HashMap<>() {{
                             put("dimension", args[1]);
                         }});
                         return true;
@@ -392,7 +392,7 @@ public class CommandPortalLock implements CommandExecutor {
                     }
 
                     if (field == null) {
-                        ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidField", new Hashtable<>() {{
+                        ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidField", new HashMap<>() {{
                             put("value", args[2]);
                         }});
                         return true;
@@ -407,7 +407,7 @@ public class CommandPortalLock implements CommandExecutor {
                                 case "true", "on", "yes", "1" -> field.set(dimensionData, true);
                                 case "false", "off", "no", "0" -> field.set(dimensionData, false);
                                 default -> {
-                                    ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidBoolean", new Hashtable<>() {{
+                                    ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidBoolean", new HashMap<>() {{
                                         put("value", newValue);
                                     }});
                                     return true;
@@ -423,7 +423,7 @@ public class CommandPortalLock implements CommandExecutor {
                                 field.set(dimensionData, newValue);
                             }
                             catch (Exception ex) {
-                                ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidDate", new Hashtable<>() {{
+                                ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidDate", new HashMap<>() {{
                                     put("value", newValue);
                                 }});
                                 return true;
@@ -445,7 +445,7 @@ public class CommandPortalLock implements CommandExecutor {
                             }
                             else
                             {
-                                ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidNumber", new Hashtable<>() {{
+                                ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidNumber", new HashMap<>() {{
                                     put("value", newValue);
                                 }});
                                 return true;
@@ -462,7 +462,7 @@ public class CommandPortalLock implements CommandExecutor {
                             }
 
                             if (!isValid) {
-                                ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidWorld", new Hashtable<>() {{
+                                ChatUtils.sendLocalizedMsg(player, "Commands.Edit.InvalidWorld", new HashMap<>() {{
                                     put("value", newValue);
                                 }});
                                 return true;
@@ -499,7 +499,7 @@ public class CommandPortalLock implements CommandExecutor {
                     }
 
                     if (dimensionData == null) {
-                        ChatUtils.sendLocalizedMsg(player, "General.DimensionNotFound", new Hashtable<>() {{
+                        ChatUtils.sendLocalizedMsg(player, "General.DimensionNotFound", new HashMap<>() {{
                             put("dimension", args[1]);
                         }});
                         return true;
@@ -507,7 +507,7 @@ public class CommandPortalLock implements CommandExecutor {
 
                     DimensionUtils.Dimensions.remove(dimensionData);
                     DimensionUtils.SaveConfig();
-                    ChatUtils.sendLocalizedMsg(player, "Commands.Remove.Success", new Hashtable<>() {{
+                    ChatUtils.sendLocalizedMsg(player, "Commands.Remove.Success", new HashMap<>() {{
                         put("dimension", args[1]);
                     }});
 
@@ -530,13 +530,13 @@ public class CommandPortalLock implements CommandExecutor {
      * @param player The player to send the help message to.
      */
     private void ExecuteHelp(Player player) {
-        ChatUtils.sendLocalizedMsg(player, "Commands.Help.Title", new Hashtable<>() {{
+        ChatUtils.sendLocalizedMsg(player, "Commands.Help.Title", new HashMap<>() {{
             put("page", 1);
             put("maxpage", 1);
         }});
         ChatUtils.sendLocalizedMsg(player, "Commands.Help.Info");
 
-        Dictionary<String, Object> parameters = new Hashtable<>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("subcommand", "help");
         parameters.put("syntax", LocaleUtils.Localize(player,"Commands.Help.Syntax"));
         parameters.put("description", LocaleUtils.Localize(player,"Commands.Help.Desc"));
