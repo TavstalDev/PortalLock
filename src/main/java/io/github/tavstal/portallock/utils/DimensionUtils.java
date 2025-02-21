@@ -1,5 +1,6 @@
 package io.github.tavstal.portallock.utils;
 
+import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.portallock.PortalLock;
 import io.github.tavstal.portallock.models.DimensionData;
 import io.github.tavstal.portallock.models.ESoundType;
@@ -29,6 +30,7 @@ import java.util.Objects;
  * Utility class for handling dimension-related operations in the PortalLock plugin.
  */
 public class DimensionUtils {
+    private static final PluginLogger _logger = PortalLock.Logger().WithModule(DimensionUtils.class);
     private static Map<String, Object> _data;
     public static List<DimensionData> Dimensions;
 
@@ -103,7 +105,7 @@ public class DimensionUtils {
                 // Close the input stream
                 inputStream.close();
             } catch (IOException e) {
-                LoggerUtils.LogError("Failed to get resource file.");
+                _logger.Error("Failed to get resource file.");
             }
         }
 
@@ -113,13 +115,13 @@ public class DimensionUtils {
         }
         catch (FileNotFoundException ex)
         {
-            LoggerUtils.LogError(String.format("Failed to get file. Path: %s", filePath));
+            _logger.Error(String.format("Failed to get file. Path: %s", filePath));
             return false;
         }
         catch (Exception ex)
         {
-            LoggerUtils.LogWarning("Unknown error happened while reading the file.");
-            LoggerUtils.LogError(ex.getMessage());
+            _logger.Warn("Unknown error happened while reading the file.");
+            _logger.Error(ex.getMessage());
             return false;
         }
 
@@ -127,7 +129,7 @@ public class DimensionUtils {
         Object yamlObject = yaml.load(inputStream);
         if (!(yamlObject instanceof Map))
         {
-            LoggerUtils.LogError("Failed to cast the yamlObject after reading the file data.");
+            PortalLock.Instance.getCustomLogger().LogError("Failed to cast the yamlObject after reading the file data.");
             return false;
         }
 
@@ -136,7 +138,7 @@ public class DimensionUtils {
         _data = localValue; // Warning fix
         if (!_data.containsKey("dimensions"))
         {
-            LoggerUtils.LogError("Failed to find the dimensions key in the configuration file.");
+            _logger.Error("Failed to find the dimensions key in the configuration file.");
             return false;
         }
         Dimensions = new ArrayList<>();
@@ -183,8 +185,8 @@ public class DimensionUtils {
             return true;
         }
         catch (Exception ex) {
-            LoggerUtils.LogError("Failed to save the configuration file.");
-            LoggerUtils.LogError(ex.getMessage());
+            _logger.Error("Failed to save the configuration file.");
+            _logger.Error(ex.getMessage());
             return false;
         }
     }
@@ -266,8 +268,8 @@ public class DimensionUtils {
                 player.playSound(PortalLock.Instance.getSound(ESoundType.Success));
 
         } catch (Exception ex) {
-            LoggerUtils.LogError("Error in shouldPreventDimensionChange:");
-            LoggerUtils.LogError(ex.getMessage());
+            _logger.Error("Error in shouldPreventDimensionChange:");
+            _logger.Error(ex.getMessage());
         }
         return false;
     }
@@ -311,8 +313,8 @@ public class DimensionUtils {
             }
         }
         catch (Exception ex) {
-            LoggerUtils.LogError("Error in checkDimension:");
-            LoggerUtils.LogError(ex.getLocalizedMessage());
+            _logger.Error("Error in checkDimension:");
+            _logger.Error(ex.getLocalizedMessage());
         }
     }
 
@@ -340,8 +342,8 @@ public class DimensionUtils {
             player.teleport(spawnLoc);
         }
         catch (Exception ex) {
-            LoggerUtils.LogError("Error in kickOutOfDimension:");
-            LoggerUtils.LogError(ex.getLocalizedMessage());
+            _logger.Error("Error in kickOutOfDimension:");
+            _logger.Error(ex.getLocalizedMessage());
         }
     }
 }

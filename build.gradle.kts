@@ -26,6 +26,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    implementation(files("libs/MineCoreLib-1.0.jar"))
 }
 
 tasks.test {

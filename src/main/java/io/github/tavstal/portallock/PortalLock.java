@@ -1,11 +1,12 @@
 package io.github.tavstal.portallock;
 
+import io.github.tavstal.minecorelib.PluginBase;
+import io.github.tavstal.minecorelib.core.PluginLogger;
+import io.github.tavstal.minecorelib.core.PluginTranslator;
 import io.github.tavstal.portallock.commands.CommandPortalLock;
 import io.github.tavstal.portallock.commands.CommandPortalLockCompleter;
 import io.github.tavstal.portallock.models.ESoundType;
 import io.github.tavstal.portallock.utils.DimensionUtils;
-import io.github.tavstal.portallock.utils.LocaleUtils;
-import io.github.tavstal.portallock.utils.LoggerUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.apache.http.HttpResponse;
@@ -15,7 +16,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -23,21 +23,30 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-public class PortalLock extends JavaPlugin {
-    //#region Constants
-    public static final String PROJECT_NAME = "PortalLock";
-    public static final String VERSION = "1.0.0";
-    public static final String AUTHOR = "Tavstal";
-    public static final String DOWNLOAD_URL = "https://github.com/TavstalDev/PortalLock/releases/latest";
+public class PortalLock extends PluginBase {
     public static final DateTimeFormatter DateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    //#endregion
     public static PortalLock Instance;
+    public static PluginLogger Logger() {
+        return Instance.getCustomLogger();
+    }
+    public static PluginTranslator Translator() {
+        return Instance.getTranslator();
+    }
     /**
      * Gets the plugin configuration.
      * @return The FileConfiguration object.
      */
     public static FileConfiguration GetConfig(){
         return Instance.getConfig();
+    }
+
+    public PortalLock() {
+        super("PortalLock",
+                "1.0.0",
+                "Tavstal",
+                "https://github.com/TavstalDev/PortalLock/releases/latest",
+                new String[]{"eng", "hun"}
+        );
     }
 
     /**
@@ -47,7 +56,7 @@ public class PortalLock extends JavaPlugin {
     @Override
     public void onEnable() {
         Instance = this;
-        LoggerUtils.LogInfo("Loading RespawnTimer...");
+        getCustomLogger().Info("Loading RespawnTimer...");
 
         // Register Events
         EventListener.init();
@@ -56,15 +65,15 @@ public class PortalLock extends JavaPlugin {
         saveDefaultConfig();
 
         // Load Localizations
-        if (!LocaleUtils.Load())
+        if (!getTranslator().Load())
         {
-            LoggerUtils.LogError("Failed to load localizations... Unloading...");
+            getCustomLogger().Error("Failed to load localizations... Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
         // Register Commands
-        LoggerUtils.LogDebug("Registering commands...");
+        getCustomLogger().Debug("Registering commands...");
         var portalCommand = getCommand("portallock");
         if (portalCommand != null) {
             portalCommand.setExecutor(new CommandPortalLock());
@@ -73,15 +82,15 @@ public class PortalLock extends JavaPlugin {
 
         // Load dimensions
         if (!DimensionUtils.Load()) {
-            LoggerUtils.LogError("Failed to load dimensions... Unloading...");
+            getCustomLogger().Error("Failed to load dimensions... Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
         // Schedule a task to run every second
-        LoggerUtils.LogInfo("PortalLock has been successfully loaded.");
+        getCustomLogger().Info("PortalLock has been successfully loaded.");
         if (!isUpToDate())
-            LoggerUtils.LogWarning("A new version of PortalLock is available! Download it at: " + DOWNLOAD_URL);
+            getCustomLogger().Warn("A new version of PortalLock is available! Download it at: " + getDownloadUrl());
     }
 
     /**
@@ -90,24 +99,24 @@ public class PortalLock extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        LoggerUtils.LogInfo("PortalLock has been successfully unloaded.");
+        getCustomLogger().Info("PortalLock has been successfully unloaded.");
     }
 
     /**
      * Reloads the plugin configuration and localizations.
      */
     public void reload() {
-        LoggerUtils.LogInfo("Reloading PortalLock...");
-        LoggerUtils.LogDebug("Reloading localizations...");
-        LocaleUtils.Load();
-        LoggerUtils.LogDebug("Localizations reloaded.");
-        LoggerUtils.LogDebug("Reloading configuration...");
+        getCustomLogger().Info("Reloading PortalLock...");
+        getCustomLogger().Debug("Reloading localizations...");
+        getTranslator().Load();
+        getCustomLogger().Debug("Localizations reloaded.");
+        getCustomLogger().Debug("Reloading configuration...");
         this.reloadConfig();
-        LoggerUtils.LogDebug("Configuration reloaded.");
-        LoggerUtils.LogDebug("Reloading dimensions...");
+        getCustomLogger().Debug("Configuration reloaded.");
+        getCustomLogger().Debug("Reloading dimensions...");
         DimensionUtils.Load();
-        LoggerUtils.LogDebug("Dimensions reloaded.");
-        LoggerUtils.LogInfo("PortalLock reloaded.");
+        getCustomLogger().Debug("Dimensions reloaded.");
+        getCustomLogger().Info("PortalLock reloaded.");
     }
 
     /**
@@ -116,29 +125,29 @@ public class PortalLock extends JavaPlugin {
      */
     public boolean isUpToDate() {
         String version;
-        LoggerUtils.LogDebug("Checking for updates...");
+        getCustomLogger().Debug("Checking for updates...");
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            LoggerUtils.LogDebug("Sending request to GitHub...");
-            HttpGet request = new HttpGet(DOWNLOAD_URL);
+            getCustomLogger().Debug("Sending request to GitHub...");
+            HttpGet request = new HttpGet(getDownloadUrl());
             HttpResponse response = httpClient.execute(request);
-            LoggerUtils.LogDebug("Received response from GitHub.");
+            getCustomLogger().Debug("Received response from GitHub.");
             String jsonResponse = EntityUtils.toString(response.getEntity());
-            LoggerUtils.LogDebug("Parsing response...");
+            getCustomLogger().Debug("Parsing response...");
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(jsonResponse);
-            LoggerUtils.LogDebug("Parsing release version...");
+            getCustomLogger().Debug("Parsing release version...");
             version = jsonObject.get("tag_name").toString();
         } catch (IOException e) {
-            LoggerUtils.LogError("Failed to check for updates.");
+            getCustomLogger().Error("Failed to check for updates.");
             return false;
         } catch (ParseException e) {
-            LoggerUtils.LogError("Failed to parse release version.");
+            getCustomLogger().Error("Failed to parse release version.");
             return false;
         }
 
-        LoggerUtils.LogDebug("Current version: " + VERSION);
-        LoggerUtils.LogDebug("Latest version: " + version);
-        return version.equalsIgnoreCase(VERSION);
+        getCustomLogger().Debug("Current version: " + getVersion());
+        getCustomLogger().Debug("Latest version: " + version);
+        return version.equalsIgnoreCase(getVersion());
     }
 
     /**
@@ -149,7 +158,7 @@ public class PortalLock extends JavaPlugin {
      * @throws IllegalStateException if the sound type is unexpected.
      */
     public Sound getSound(ESoundType type) {
-        String name = "";
+        String name;
         switch (type){
             case Success -> name = GetConfig().getString("SuccessSound");
             case FailEnter -> name = GetConfig().getString("FailEnterSound");

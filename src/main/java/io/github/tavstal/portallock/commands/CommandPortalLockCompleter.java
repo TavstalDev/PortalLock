@@ -4,7 +4,6 @@ import io.github.tavstal.portallock.PortalLock;
 import io.github.tavstal.portallock.models.DimensionData;
 import io.github.tavstal.portallock.models.ValueEditor;
 import io.github.tavstal.portallock.utils.DimensionUtils;
-import io.github.tavstal.portallock.utils.LoggerUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -121,6 +120,7 @@ public class CommandPortalLockCompleter implements TabCompleter {
             return commandList;
         }
         catch (Exception ex) {
+            // TODO
             LoggerUtils.LogError("An error occurred while trying to tab complete the portallock command.");
             LoggerUtils.LogError(ex.getMessage());
             return new ArrayList<>();
