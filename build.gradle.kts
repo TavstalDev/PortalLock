@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "io.github.tavstal"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -31,4 +31,57 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.register<Jar>("mojangJar") {
+    manifest {
+        attributes["paperweight-mappings-namespace"] = "mojang"
+    }
+
+    // Set .jar name
+    archiveBaseName.set("portallock-mojang")
+
+    // Set the duplicates strategy
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    // Collect runtime classpath files
+    from({
+        configurations.runtimeClasspath.get().filter { it.exists() }.map { if (it.isDirectory) it else zipTree(it) }
+    })
+
+    // Optionally, include the compiled classes
+    from(sourceSets.main.get().output)
+}
+
+tasks.register<Jar>("spigotJar") {
+    manifest {
+        attributes["paperweight-mappings-namespace"] = "spigot"
+    }
+
+    // Set .jar name
+    archiveBaseName.set("portallock-spigot")
+
+    // Set the duplicates strategy
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    // Collect runtime classpath files
+    from({
+        configurations.runtimeClasspath.get().filter { it.exists() }.map { if (it.isDirectory) it else zipTree(it) }
+    })
+
+    // Optionally, include the compiled classes
+    from(sourceSets.main.get().output)
+}
+
+tasks.register("buildJars") {
+    dependsOn("mojangJar", "spigotJar")
+}
+
+tasks.named("build") {
+    dependsOn("processResources")
+    dependsOn("buildJars")
+}
+
+tasks.named<Jar>("jar") {
+    enabled = false
 }
