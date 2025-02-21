@@ -129,7 +129,7 @@ public class DimensionUtils {
         Object yamlObject = yaml.load(inputStream);
         if (!(yamlObject instanceof Map))
         {
-            PortalLock.Instance.getCustomLogger().LogError("Failed to cast the yamlObject after reading the file data.");
+            PortalLock.Instance.getCustomLogger().Error("Failed to cast the yamlObject after reading the file data.");
             return false;
         }
 

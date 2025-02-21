@@ -1,5 +1,6 @@
 package io.github.tavstal.portallock.commands;
 
+import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.portallock.PortalLock;
 import io.github.tavstal.portallock.models.DimensionData;
 import io.github.tavstal.portallock.models.ValueEditor;
@@ -20,6 +21,8 @@ import java.util.List;
  * CommandPortalLockCompleter class provides tab completion for the PortalLock commands.
  */
 public class CommandPortalLockCompleter implements TabCompleter {
+    private final PluginLogger _logger = PortalLock.Logger().WithModule(CommandPortalLockCompleter.class);
+
     /**
      * Handles tab completion for the PortalLock commands.
      *
@@ -120,9 +123,8 @@ public class CommandPortalLockCompleter implements TabCompleter {
             return commandList;
         }
         catch (Exception ex) {
-            // TODO
-            LoggerUtils.LogError("An error occurred while trying to tab complete the portallock command.");
-            LoggerUtils.LogError(ex.getMessage());
+            _logger.Error("An error occurred while trying to tab complete the portallock command.");
+            _logger.Error(ex.getMessage());
             return new ArrayList<>();
         }
     }
