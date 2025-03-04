@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 public class DimensionData {
 
@@ -227,7 +228,9 @@ public class DimensionData {
 
         if (player != null) {
             if (enableChatMsg)
-                player.sendMessage(ChatUtils.translateColors(chatMsg.replace("%dimension%", DisplayName), true));
+                PortalLock.Instance.sendLocalizedMsg(player, chatMsg, new HashMap<>() {{
+                    put("dimension", DisplayName);
+                }});
             if (enableTitleMsg)
                 player.showTitle(Title.title(ChatUtils.translateColors(titleMsg.replace("%dimension%", DisplayName), true), ChatUtils.translateColors(subTitleMsg.replace("%dimension%", DisplayName), true)));
             if (enableActionBarMsg)
@@ -237,7 +240,9 @@ public class DimensionData {
         
         for (var onlinePlayer : PortalLock.Instance.getServer().getOnlinePlayers()) {
             if (enableChatMsg)
-                onlinePlayer.sendMessage(ChatUtils.translateColors(chatMsg.replace("%dimension%", DisplayName), true));
+                PortalLock.Instance.sendLocalizedMsg(onlinePlayer, chatMsg, new HashMap<>() {{
+                    put("dimension", DisplayName);
+                }});
             if (enableTitleMsg)
                 onlinePlayer.showTitle(Title.title(ChatUtils.translateColors(titleMsg.replace("%dimension%", DisplayName), true), ChatUtils.translateColors(subTitleMsg.replace("%dimension%", DisplayName), true)));
             if (enableActionBarMsg)
