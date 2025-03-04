@@ -119,3 +119,6 @@ DimensionMsg:
     Chat: "%prefix% &cLeaving the &e%dimension%&c dimension is locked for &e%time%&c."
     ActionBar: "&cLeaving the &e%dimension%&c dimension is locked for &e%time%&c."
 Time: "%days% day(s) | %hours%:%minutes%:%seconds%"
+
+# Do not change this value.
+FileVersion: 1

@@ -118,3 +118,6 @@ DimensionMsg:
     Chat: "%prefix% &cA &e%dimension%&c dimenzióból való kilépés zárolva van &e%time%&c időtartamra."
     ActionBar: "&cA &e%dimension%&c dimenzióból való kilépés zárolva van &e%time%&c időtartamra."
 Time: "%days% nap | %hours%:%minutes%:%seconds%"
+
+# Do not change this value.
+FileVersion: 1
