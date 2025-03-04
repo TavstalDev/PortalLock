@@ -228,7 +228,7 @@ public class DimensionData {
 
         if (player != null) {
             if (enableChatMsg)
-                PortalLock.Instance.sendLocalizedMsg(player, chatMsg, new HashMap<>() {{
+                PortalLock.Instance.sendRichMsg(player, chatMsg, new HashMap<>() {{
                     put("dimension", DisplayName);
                 }});
             if (enableTitleMsg)
@@ -240,7 +240,7 @@ public class DimensionData {
         
         for (var onlinePlayer : PortalLock.Instance.getServer().getOnlinePlayers()) {
             if (enableChatMsg)
-                PortalLock.Instance.sendLocalizedMsg(onlinePlayer, chatMsg, new HashMap<>() {{
+                PortalLock.Instance.sendRichMsg(onlinePlayer, chatMsg, new HashMap<>() {{
                     put("dimension", DisplayName);
                 }});
             if (enableTitleMsg)
