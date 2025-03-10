@@ -8,4 +8,57 @@ website: https://github.com/TavstalDev/PortalLock
 
 commands:
   portallock:
-    description: ""
+    description: Main command for PortalLock
+    usage: /portallock <subcommand>
+    aliases: [pl]
+    permission: portallock.commands.portallock
+permissions:
+  portallock.commands.portallock:
+    description: Allows use of the /portallock command
+    default: op
+  portallock.commands.portallock.reload:
+    description: Allows reloading the plugin
+    default: op
+  portallock.commands.portallock.version:
+    description: Allows checking the plugin version
+    default: op
+  portallock.commands.portallock.list:
+    description: Allows listing dimensions
+    default: op
+  portallock.commands.portallock.info:
+    description: Allows viewing dimension info
+    default: op
+  portallock.commands.portallock.add:
+    description: Allows adding a new dimension
+    default: op
+  portallock.commands.portallock.edit:
+    description: Allows editing a dimension
+    default: op
+  portallock.commands.portallock.remove:
+    description: Allows removing a dimension
+    default: op
+  portallock.player:
+    description: Basic permissions for players
+    default: true
+    children:
+      portallock.commands.portallock: true
+      portallock.commands.portallock.list: true
+      portallock.commands.portallock.info: true
+  portallock.admin:
+    description: Full permissions for admins
+    default: op
+    children:
+      portallock.commands.portallock: true
+      portallock.commands.portallock.reload: true
+      portallock.commands.portallock.version: true
+      portallock.commands.portallock.list: true
+      portallock.commands.portallock.info: true
+      portallock.commands.portallock.add: true
+      portallock.commands.portallock.edit: true
+      portallock.commands.portallock.remove: true
+  portallock.*:
+    description: Grants all permissions
+    default: op
+    children:
+      portallock.admin: true
+      portallock.player: true
