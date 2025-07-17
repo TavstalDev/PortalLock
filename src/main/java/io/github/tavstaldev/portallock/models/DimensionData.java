@@ -1,7 +1,7 @@
-package io.github.tavstal.portallock.models;
+package io.github.tavstaldev.portallock.models;
 
-import io.github.tavstal.minecorelib.utils.ChatUtils;
-import io.github.tavstal.portallock.PortalLock;
+import io.github.tavstaldev.minecorelib.utils.ChatUtils;
+import io.github.tavstaldev.portallock.PortalLock;
 import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
 

@@ -1,10 +1,10 @@
-package io.github.tavstal.portallock.commands;
+package io.github.tavstaldev.portallock.commands;
 
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.portallock.PortalLock;
-import io.github.tavstal.portallock.models.DimensionData;
-import io.github.tavstal.portallock.models.ValueEditor;
-import io.github.tavstal.portallock.utils.DimensionUtils;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.portallock.PortalLock;
+import io.github.tavstaldev.portallock.models.DimensionData;
+import io.github.tavstaldev.portallock.models.ValueEditor;
+import io.github.tavstaldev.portallock.utils.DimensionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

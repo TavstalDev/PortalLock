@@ -1,9 +1,9 @@
-package io.github.tavstal.portallock;
+package io.github.tavstaldev.portallock;
 
 import com.destroystokyo.paper.event.server.ServerTickEndEvent;
-import io.github.tavstal.portallock.models.DimensionData;
-import io.github.tavstal.portallock.models.EAnnouncement;
-import io.github.tavstal.portallock.utils.DimensionUtils;
+import io.github.tavstaldev.portallock.models.DimensionData;
+import io.github.tavstaldev.portallock.models.EAnnouncement;
+import io.github.tavstaldev.portallock.utils.DimensionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;

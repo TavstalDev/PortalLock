@@ -1,13 +1,14 @@
-package io.github.tavstal.portallock.commands;
+package io.github.tavstaldev.portallock.commands;
 
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.minecorelib.utils.ChatUtils;
-import io.github.tavstal.portallock.PortalLock;
-import io.github.tavstal.portallock.models.ConfigField;
-import io.github.tavstal.portallock.models.DimensionData;
-import io.github.tavstal.portallock.models.EFieldType;
-import io.github.tavstal.portallock.models.ValueEditor;
-import io.github.tavstal.portallock.utils.*;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.minecorelib.utils.ChatUtils;
+import io.github.tavstaldev.portallock.PortalLock;
+import io.github.tavstaldev.portallock.models.ConfigField;
+import io.github.tavstaldev.portallock.models.DimensionData;
+import io.github.tavstaldev.portallock.models.EFieldType;
+import io.github.tavstaldev.portallock.models.ValueEditor;
+import io.github.tavstaldev.portallock.utils.DimensionUtils;
+import io.github.tavstaldev.portallock.utils.MathUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.World;

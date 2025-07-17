@@ -1,4 +1,4 @@
-package io.github.tavstal.portallock.models;
+package io.github.tavstaldev.portallock.models;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,4 +1,4 @@
-package io.github.tavstal.portallock.models;
+package io.github.tavstaldev.portallock.models;
 
 /**
  * Enum representing different types of sounds in the PortalLock plugin.

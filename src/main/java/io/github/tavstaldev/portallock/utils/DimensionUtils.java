@@ -1,10 +1,10 @@
-package io.github.tavstal.portallock.utils;
+package io.github.tavstaldev.portallock.utils;
 
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.portallock.PortalLock;
-import io.github.tavstal.portallock.models.DimensionData;
-import io.github.tavstal.portallock.models.ESoundType;
-import io.github.tavstal.portallock.models.EAnnouncement;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.portallock.PortalLock;
+import io.github.tavstaldev.portallock.models.DimensionData;
+import io.github.tavstaldev.portallock.models.ESoundType;
+import io.github.tavstaldev.portallock.models.EAnnouncement;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.DumperOptions;

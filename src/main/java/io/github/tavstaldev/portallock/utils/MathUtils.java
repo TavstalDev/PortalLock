@@ -1,4 +1,4 @@
-package io.github.tavstal.portallock.utils;
+package io.github.tavstaldev.portallock.utils;
 
 /**
  * Utility class for determining the numeric type of string.

@@ -1,24 +1,17 @@
-package io.github.tavstal.portallock;
+package io.github.tavstaldev.portallock;
 
-import io.github.tavstal.minecorelib.PluginBase;
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.minecorelib.core.PluginTranslator;
-import io.github.tavstal.portallock.commands.CommandPortalLock;
-import io.github.tavstal.portallock.commands.CommandPortalLockCompleter;
-import io.github.tavstal.portallock.models.ESoundType;
-import io.github.tavstal.portallock.utils.DimensionUtils;
+import io.github.tavstaldev.minecorelib.PluginBase;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.minecorelib.core.PluginTranslator;
+import io.github.tavstaldev.portallock.commands.CommandPortalLock;
+import io.github.tavstaldev.portallock.commands.CommandPortalLockCompleter;
+import io.github.tavstaldev.portallock.models.ESoundType;
+import io.github.tavstaldev.portallock.utils.DimensionUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.intellij.lang.annotations.Subst;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -56,7 +49,7 @@ public class PortalLock extends PluginBase {
     @Override
     public void onEnable() {
         Instance = this;
-        getCustomLogger().Info("Loading RespawnTimer...");
+        _logger.Info("Loading RespawnTimer...");
 
         // Register Events
         EventListener.init();
@@ -67,13 +60,13 @@ public class PortalLock extends PluginBase {
         // Load Localizations
         if (!getTranslator().Load())
         {
-            getCustomLogger().Error("Failed to load localizations... Unloading...");
+            _logger.Error("Failed to load localizations... Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
         // Register Commands
-        getCustomLogger().Debug("Registering commands...");
+        _logger.Debug("Registering commands...");
         var portalCommand = getCommand("portallock");
         if (portalCommand != null) {
             portalCommand.setExecutor(new CommandPortalLock());
@@ -82,15 +75,15 @@ public class PortalLock extends PluginBase {
 
         // Load dimensions
         if (!DimensionUtils.Load()) {
-            getCustomLogger().Error("Failed to load dimensions... Unloading...");
+            _logger.Error("Failed to load dimensions... Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
         // Schedule a task to run every second
-        getCustomLogger().Info("PortalLock has been successfully loaded.");
+        _logger.Info("PortalLock has been successfully loaded.");
         if (!isUpToDate())
-            getCustomLogger().Warn("A new version of PortalLock is available! Download it at: " + getDownloadUrl());
+            _logger.Warn("A new version of PortalLock is available! Download it at: " + getDownloadUrl());
     }
 
     /**
@@ -99,55 +92,24 @@ public class PortalLock extends PluginBase {
      */
     @Override
     public void onDisable() {
-        getCustomLogger().Info("PortalLock has been successfully unloaded.");
+        _logger.Info("PortalLock has been successfully unloaded.");
     }
 
     /**
      * Reloads the plugin configuration and localizations.
      */
     public void reload() {
-        getCustomLogger().Info("Reloading PortalLock...");
-        getCustomLogger().Debug("Reloading localizations...");
+        _logger.Info("Reloading PortalLock...");
+        _logger.Debug("Reloading localizations...");
         getTranslator().Load();
-        getCustomLogger().Debug("Localizations reloaded.");
-        getCustomLogger().Debug("Reloading configuration...");
+        _logger.Debug("Localizations reloaded.");
+        _logger.Debug("Reloading configuration...");
         this.reloadConfig();
-        getCustomLogger().Debug("Configuration reloaded.");
-        getCustomLogger().Debug("Reloading dimensions...");
+        _logger.Debug("Configuration reloaded.");
+        _logger.Debug("Reloading dimensions...");
         DimensionUtils.Load();
-        getCustomLogger().Debug("Dimensions reloaded.");
-        getCustomLogger().Info("PortalLock reloaded.");
-    }
-
-    /**
-     * Checks if the plugin is up to date by comparing the current version with the latest release version.
-     * @return true if the plugin is up to date, false otherwise.
-     */
-    public boolean isUpToDate() {
-        String version;
-        getCustomLogger().Debug("Checking for updates...");
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            getCustomLogger().Debug("Sending request to GitHub...");
-            HttpGet request = new HttpGet(getDownloadUrl());
-            HttpResponse response = httpClient.execute(request);
-            getCustomLogger().Debug("Received response from GitHub.");
-            String jsonResponse = EntityUtils.toString(response.getEntity());
-            getCustomLogger().Debug("Parsing response...");
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(jsonResponse);
-            getCustomLogger().Debug("Parsing release version...");
-            version = jsonObject.get("tag_name").toString();
-        } catch (IOException e) {
-            getCustomLogger().Error("Failed to check for updates.");
-            return false;
-        } catch (ParseException e) {
-            getCustomLogger().Error("Failed to parse release version.");
-            return false;
-        }
-
-        getCustomLogger().Debug("Current version: " + getVersion());
-        getCustomLogger().Debug("Latest version: " + version);
-        return version.equalsIgnoreCase(getVersion());
+        _logger.Debug("Dimensions reloaded.");
+        _logger.Info("PortalLock reloaded.");
     }
 
     /**
@@ -158,7 +120,7 @@ public class PortalLock extends PluginBase {
      * @throws IllegalStateException if the sound type is unexpected.
      */
     public Sound getSound(ESoundType type) {
-        String name;
+        @Subst("") String name;
         switch (type){
             case Success -> name = GetConfig().getString("SuccessSound");
             case FailEnter -> name = GetConfig().getString("FailEnterSound");
