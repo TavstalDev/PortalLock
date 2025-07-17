@@ -1,5 +1,11 @@
 # PortalLock
 
+![Release (latest by date)](https://img.shields.io/github/v/release/TavstalDev/PortalLock?style=plastic-square)
+![Workflow Status](https://img.shields.io/github/actions/workflow/status/TavstalDev/PortalLock/release.yml?branch=stable&label=build&style=plastic-square)
+![License](https://img.shields.io/github/license/TavstalDev/PortalLock?style=plastic-square)
+![Downloads](https://img.shields.io/github/downloads/TavstalDev/PortalLock/total?style=plastic-square)
+![Issues](https://img.shields.io/github/issues/TavstalDev/PortalLock?style=plastic-square)
+
 PortalLock is a Minecraft plugin. It prevents players from speed running by locking portals.
 
 ## Features
