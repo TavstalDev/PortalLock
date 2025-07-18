@@ -81,9 +81,17 @@ public class PortalLock extends PluginBase {
         }
 
         // Schedule a task to run every second
-        _logger.Info("PortalLock has been successfully loaded.");
-        if (!isUpToDate())
-            _logger.Warn("A new version of PortalLock is available! Download it at: " + getDownloadUrl());
+        _logger.Ok("PortalLock has been successfully loaded.");
+        isUpToDate().thenAccept(upToDate -> {
+            if (upToDate) {
+                _logger.Ok("Plugin is up to date!");
+            } else {
+                _logger.Warn("A new version of the plugin is available: " + getDownloadUrl());
+            }
+        }).exceptionally(e -> {
+            _logger.Error("Failed to determine update status: " + e.getMessage());
+            return null;
+        });
     }
 
     /**
