@@ -85,14 +85,16 @@ public class CommandPortalLock implements CommandExecutor {
                     parameters.put("version", PortalLock.Instance.getVersion());
                     PortalLock.Instance.sendLocalizedMsg(player, "Commands.Version.Current", parameters);
 
-                    boolean isUpToDate = PortalLock.Instance.isUpToDate();
-                    parameters = new HashMap<>();
-                    if (isUpToDate) {
-                        PortalLock.Instance.sendLocalizedMsg(player, "Commands.Version.UpToDate");
-                    } else {
-                        parameters.put("link", PortalLock.Instance.getDownloadUrl());
-                        PortalLock.Instance.sendLocalizedMsg(player, "Commands.Version.Outdated");
-                    }
+                    PortalLock.Instance.isUpToDate().thenAccept(upToDate -> {
+                        if (upToDate) {
+                            PortalLock.Instance.sendLocalizedMsg(player, "Commands.Version.UpToDate");
+                        } else {
+                            PortalLock.Instance.sendLocalizedMsg(player, "Commands.Version.Outdated", Map.of("link", PortalLock.Instance.getDownloadUrl()));
+                        }
+                    }).exceptionally(e -> {
+                        _logger.Error("Failed to determine update status: " + e.getMessage());
+                        return null;
+                    });
                     return true;
                 }
                 case "list": {
